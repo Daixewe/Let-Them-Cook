@@ -1,12 +1,68 @@
 using UnityEngine;
 using System.Collections;
 
-public class GrillStation : MonoBehaviour
+public class GrillStation : MonoBehaviour, IInteractable
 {
     [SerializeField] private float cookTime = 5f;
+    //[SerializeField] private FoodItem currentFood;
 
     private FoodItem currentFood;
     private bool isCooking;
+
+    public void Interact()
+    {
+
+        PlayerPickup player = FindAnyObjectByType<PlayerPickup>();
+
+        if (player == null)
+            return;
+
+        // Parrilla vacía + jugador tiene comida
+        if (currentFood == null && player.HasItem())
+        {
+            PickupItem pickup = player.RemoveHeldItem();
+
+            FoodItem food = pickup.GetComponent<FoodItem>();
+
+            if (food != null)
+            {
+                PlaceFood(food);
+
+                food.transform.position =
+                    transform.position + Vector3.up * 0.5f;
+            }
+
+            return;
+        }
+
+        // Comida cocinada + jugador no tiene nada
+        if (currentFood != null &&
+            currentFood.CurrentState == FoodState.Cooked &&
+            !player.HasItem())
+        {
+            FoodItem food = TakeFood();
+
+            if (food != null)
+            {
+                PickupItem pickup = food.GetComponent<PickupItem>();
+
+                if (pickup != null)
+                {
+                    player.PickUp(pickup);
+                }
+            }
+
+            return;
+        }
+
+        // Comida cruda + no está cocinando
+        if (currentFood != null &&
+            currentFood.CurrentState == FoodState.Raw &&
+            !isCooking)
+        {
+            StartCoroutine(CookFood());
+        }
+    }
 
     public bool HasFood()
     {
@@ -16,6 +72,9 @@ public class GrillStation : MonoBehaviour
 
     public void PlaceFood(FoodItem food)
     {
+
+        Debug.Log("PlaceFood called");
+
         if (currentFood != null)
         {
             Debug.Log("Grill is already occupied!");
@@ -24,7 +83,7 @@ public class GrillStation : MonoBehaviour
 
         currentFood = food;
         Debug.Log("food already on the grill");
-        StartCoroutine(CookFood());
+        
     }
 
     private IEnumerator CookFood()

@@ -16,8 +16,8 @@ public class Interactor : MonoBehaviour
         
     }
 
-    
-    void Update()
+
+    /*void Update()
     {
         if(Input.GetKeyDown(KeyCode.G))
         {
@@ -28,6 +28,28 @@ public class Interactor : MonoBehaviour
                {
                    interactable.Interact();
                }
+            }
+        }
+    }*/
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            Ray r = new Ray(InteractorSource.position, InteractorSource.forward);
+
+            if (Physics.Raycast(r, out RaycastHit hit, InteractorRange))
+            {
+                Debug.Log("Hit: " + hit.collider.name);
+
+                if (hit.collider.TryGetComponent(out IInteractable interactable))
+                {
+                    interactable.Interact();
+                }
+            }
+            else
+            {
+                Debug.Log("Nothing hit");
             }
         }
     }
