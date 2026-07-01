@@ -8,9 +8,7 @@ public class Inventory : MonoBehaviour
     void Start()
     {
         
-        AñadirIngrediente("Tomate", 5);
-        AñadirIngrediente("Queso", 2);
-        AñadirIngrediente("Harina", 1);
+       
        
     }
 
@@ -30,10 +28,30 @@ public class Inventory : MonoBehaviour
         Debug.Log($"Añadido: {cantidad} de {nombre}. Total: {listaIngredientes[nombre]}");
     }
 
-    
+    public bool TieneIngredientesEspecificos(string ingredienteA, string ingredienteB)
+    {
+        // 1. Verificar el primer ingrediente
+        bool tieneA = listaIngredientes.ContainsKey(ingredienteA) && listaIngredientes[ingredienteA] > 0;
+
+        // 2. Verificar el segundo ingrediente
+        bool tieneB = listaIngredientes.ContainsKey(ingredienteB) && listaIngredientes[ingredienteB] > 0;
+
+        // Devuelve true solo si ambos son verdaderos
+        return tieneA && tieneB;
+    }
+
+    public int ObtenerCantidad(string nombre)
+    {
+        if (listaIngredientes.TryGetValue(nombre, out int cantidad))
+        {
+            return cantidad;
+        }
+        return 0;
+    }
+
     public void UsarIngrediente(string nombre, int cantidadNecesaria)
     {
-       
+        // Verificar si el ingrediente existe en el diccionario
         if (listaIngredientes.ContainsKey(nombre))
         {
             if (listaIngredientes[nombre] >= cantidadNecesaria)
@@ -49,6 +67,16 @@ public class Inventory : MonoBehaviour
         else
         {
             Debug.LogError($"El ingrediente {nombre} no está en la lista.");
+        }
+    }
+
+    public void ConsumirIngredientes(string ingredienteA, string ingredienteB)
+    {
+        if (TieneIngredientesEspecificos(ingredienteA, ingredienteB))
+        {
+            listaIngredientes[ingredienteA]--;
+            listaIngredientes[ingredienteB]--;
+            Debug.Log($"Se consumió 1 de {ingredienteA} y 1 de {ingredienteB}.");
         }
     }
 }
