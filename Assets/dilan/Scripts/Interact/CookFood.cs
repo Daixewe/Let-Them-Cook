@@ -4,10 +4,10 @@ public class CookFood : MonoBehaviour, IInteractable
 {
 
     [Header("Configuración del Requisito")]
-    [SerializeField] private string ingredienteRequerido;
+    [SerializeField] private Ingredientes ingredienteRequerido;
     [SerializeField] private int cantidadRequerida = 1;
 
-    [SerializeField] private string PreparedFood;
+    [SerializeField] private Ingredientes PreparedFood;
 
     [Header("Referencias")]
     [SerializeField] private Inventory playerInventory;

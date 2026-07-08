@@ -3,9 +3,9 @@ using UnityEngine;
 public class PlateFood : MonoBehaviour, IInteractable
 {
     [SerializeField] private Inventory playerInventory;
-    [SerializeField] private string ingredient1;
-    [SerializeField] private string ingredient2;
-    [SerializeField] private string cookedFood;
+    [SerializeField] private Ingredientes ingredient1;
+    [SerializeField] private Ingredientes ingredient2;
+    [SerializeField] private Ingredientes cookedFood;
 
     public void Interact()
     {
@@ -14,8 +14,8 @@ public class PlateFood : MonoBehaviour, IInteractable
 
     void TryToCook()
     {
-        string ing1 = ingredient1;
-        string ing2 = ingredient2;
+        Ingredientes ing1 = ingredient1;
+        Ingredientes ing2 = ingredient2;
 
         // Usamos el método que creamos en el inventario
         if (playerInventory.TieneIngredientesEspecificos(ing1, ing2))
@@ -31,7 +31,7 @@ public class PlateFood : MonoBehaviour, IInteractable
         }
     }
 
-    private bool CookingProcess(string ing1, string ing2)
+    private bool CookingProcess(Ingredientes ing1, Ingredientes ing2)
     {
 
         playerInventory.ConsumirIngredientes(ing1, ing2);

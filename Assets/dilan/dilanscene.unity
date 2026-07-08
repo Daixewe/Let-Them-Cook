@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickIngredient
   playerInventory: {fileID: 2007173739}
-  ingredientName: Potato
+  ingredientName: 0
 --- !u!1 &387897379
 GameObject:
   m_ObjectHideFlags: 0
@@ -554,7 +554,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickIngredient
   playerInventory: {fileID: 2007173739}
-  ingredientName: Lettuce
+  ingredientName: 0
 --- !u!1 &484267429
 GameObject:
   m_ObjectHideFlags: 0
@@ -681,7 +681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickIngredient
   playerInventory: {fileID: 2007173739}
-  ingredientName: Tomato
+  ingredientName: 0
 --- !u!1001 &546312118
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1294,7 +1294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickIngredient
   playerInventory: {fileID: 2007173739}
-  ingredientName: FrozenMeat
+  ingredientName: 0
 --- !u!1 &1395168395
 GameObject:
   m_ObjectHideFlags: 0
@@ -1327,9 +1327,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c83a29c7a01891547a36bf34967f5a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CookFood
-  ingredienteRequerido: Lettuce
+  ingredienteRequerido: 0
   cantidadRequerida: 1
-  PreparedFood: ChopLettuce
+  PreparedFood: 1
   playerInventory: {fileID: 2007173739}
 --- !u!65 &1395168397
 BoxCollider:
