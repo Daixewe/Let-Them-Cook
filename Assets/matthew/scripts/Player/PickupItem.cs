@@ -15,4 +15,6 @@ public class PickupItem : MonoBehaviour, IInteractable
             player.PickUp(this);
         }
     }
+
+
 }

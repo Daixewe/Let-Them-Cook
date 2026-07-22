@@ -12,6 +12,10 @@ public class PlayerPickup : MonoBehaviour
         {
             DropItem();
         }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            DestroyHeldItem();
+        }
     }
 
     public bool HasItem()
@@ -93,5 +97,14 @@ public class PlayerPickup : MonoBehaviour
 
         item.transform.SetParent(null);
         return item;
+    }
+
+    public void DestroyHeldItem()
+    {
+        if (heldItem == null)
+            return;
+
+        Destroy(heldItem.gameObject);
+        heldItem = null;
     }
 }
