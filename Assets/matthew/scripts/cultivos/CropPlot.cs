@@ -3,70 +3,125 @@ using UnityEngine;
 
 public class CropPlot : MonoBehaviour, IInteractable
 {
-    [Header("Lugar donde aparece la planta")]
+    [Header("Referencias")]
     [SerializeField] private Transform cropSpawnPoint;
+    [SerializeField] private Inventory playerInventory;
 
-    [Header("Prefabs de crecimiento")]
+    [Header("Etapas de crecimiento")]
     [SerializeField] private GameObject[] growthStagePrefabs;
-
-    [Header("Objeto cosechado")]
-    [SerializeField] private PickupItem harvestPrefab;
-
-    [Header("Configuración")]
     [SerializeField] private float timeBetweenStages = 5f;
+
+    [Header("Semilla necesaria")]
+    [SerializeField] private Ingredientes requiredSeed;
+    [SerializeField] private int requiredSeedAmount = 1;
+
+    [Header("Resultado de la cosecha")]
+    [SerializeField] private Ingredientes harvestedIngredient;
+    [SerializeField] private int harvestAmount = 1;
 
     private GameObject currentCropVisual;
 
+    private bool isPlanted;
     private bool isGrowing;
     private bool isReady;
-    private bool isPlanted;
 
     public void Interact()
     {
         if (!isPlanted)
         {
-            StartCoroutine(GrowCrop());
+            TryPlant();
             return;
         }
 
         if (isReady)
         {
             HarvestCrop();
+            return;
+        }
+
+        if (isGrowing)
+        {
+            Debug.Log("La planta todavía está creciendo.");
         }
     }
 
-    private IEnumerator GrowCrop()
+    private void TryPlant()
     {
-        if (growthStagePrefabs == null || growthStagePrefabs.Length == 0)
+        if (playerInventory == null)
         {
-            Debug.LogWarning("No hay etapas de crecimiento asignadas.");
-            yield break;
+            Debug.LogError(
+                "Falta asignar el Inventory del jugador."
+            );
+
+            return;
         }
 
         if (cropSpawnPoint == null)
         {
-            Debug.LogWarning("No se asignó Crop Spawn Point.");
-            yield break;
+            Debug.LogError(
+                "Falta asignar Crop Spawn Point."
+            );
+
+            return;
         }
 
+        if (growthStagePrefabs == null ||
+            growthStagePrefabs.Length == 0)
+        {
+            Debug.LogError(
+                "No hay etapas de crecimiento asignadas."
+            );
+
+            return;
+        }
+
+        bool usedSeed =
+            playerInventory.IntentarUsarIngrediente(
+                requiredSeed,
+                requiredSeedAmount
+            );
+
+        if (!usedSeed)
+        {
+            Debug.Log(
+                $"Necesitas {requiredSeedAmount} de " +
+                $"{requiredSeed} para plantar."
+            );
+
+            return;
+        }
+
+        StartCoroutine(GrowCrop());
+    }
+
+    private IEnumerator GrowCrop()
+    {
         isPlanted = true;
         isGrowing = true;
         isReady = false;
 
-        for (int i = 0; i < growthStagePrefabs.Length; i++)
+        for (
+            int i = 0;
+            i < growthStagePrefabs.Length;
+            i++
+        )
         {
             ShowGrowthStage(i);
 
             if (i < growthStagePrefabs.Length - 1)
             {
-                yield return new WaitForSeconds(timeBetweenStages);
+                yield return new WaitForSeconds(
+                    timeBetweenStages
+                );
             }
         }
 
         isGrowing = false;
         isReady = true;
 
-        Debug.Log("El cultivo está listo para cosechar.");
+        Debug.Log(
+            $"{harvestedIngredient} está listo para cosechar."
+        );
     }
 
     private void ShowGrowthStage(int stageIndex)
@@ -76,18 +131,30 @@ public class CropPlot : MonoBehaviour, IInteractable
             Destroy(currentCropVisual);
         }
 
-        GameObject stagePrefab = growthStagePrefabs[stageIndex];
+        GameObject stagePrefab =
+            growthStagePrefabs[stageIndex];
 
         if (stagePrefab == null)
         {
-            Debug.LogWarning($"La etapa {stageIndex} está vacía.");
+            Debug.LogWarning(
+                $"La etapa {stageIndex} no tiene prefab."
+            );
+
             return;
         }
 
-        currentCropVisual = Instantiate(stagePrefab, cropSpawnPoint);
+        currentCropVisual = Instantiate(
+            stagePrefab,
+            cropSpawnPoint.position,
+            cropSpawnPoint.rotation,
+            cropSpawnPoint
+        );
 
-        currentCropVisual.transform.localPosition = Vector3.zero;
-        currentCropVisual.transform.localRotation = Quaternion.identity;
+        currentCropVisual.transform.localPosition =
+            Vector3.zero;
+
+        currentCropVisual.transform.localRotation =
+            Quaternion.identity;
     }
 
     private void HarvestCrop()
@@ -95,34 +162,19 @@ public class CropPlot : MonoBehaviour, IInteractable
         if (!isReady)
             return;
 
-        PlayerPickup playerPickup =
-            FindFirstObjectByType<PlayerPickup>();
-
-        if (playerPickup == null)
+        if (playerInventory == null)
         {
-            Debug.LogWarning("No se encontró PlayerPickup.");
+            Debug.LogError(
+                "Falta asignar el Inventory del jugador."
+            );
+
             return;
         }
 
-        if (playerPickup.HasItem())
-        {
-            Debug.Log("Debes tener las manos vacías para cosechar.");
-            return;
-        }
-
-        if (harvestPrefab == null)
-        {
-            Debug.LogWarning("No se asignó el Harvest Prefab.");
-            return;
-        }
-
-        PickupItem harvestedItem = Instantiate(
-            harvestPrefab,
-            cropSpawnPoint.position,
-            cropSpawnPoint.rotation
+        playerInventory.AñadirIngrediente(
+            harvestedIngredient,
+            harvestAmount
         );
-
-        playerPickup.PickUp(harvestedItem);
 
         if (currentCropVisual != null)
         {
@@ -134,6 +186,9 @@ public class CropPlot : MonoBehaviour, IInteractable
         isGrowing = false;
         isReady = false;
 
-        Debug.Log("Cultivo cosechado. La parcela está disponible.");
+        Debug.Log(
+            $"Cosechaste {harvestAmount} de " +
+            $"{harvestedIngredient}."
+        );
     }
 }
