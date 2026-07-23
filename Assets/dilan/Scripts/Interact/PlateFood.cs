@@ -37,7 +37,7 @@ public class PlateFood : MonoBehaviour, IInteractable
         playerInventory.ConsumirIngredientes(ing1, ing2);
         playerInventory.AñadirIngrediente(cookedFood, 1);
 
-        Debug.Log("¡Has cocinado una deliciosa Pizza! 🍕");
+        
         return true;
     }
 }

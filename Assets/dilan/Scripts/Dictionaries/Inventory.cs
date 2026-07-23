@@ -6,14 +6,10 @@ public class Inventory : MonoBehaviour
 {
     private Dictionary<Ingredientes, int> listaIngredientes = new();
 
-    void Start()
-    {
-        
-       
-       
-    }
+    
 
-   
+
+
     public void AñadirIngrediente(Ingredientes nombre, int cantidad)
     {
         if (listaIngredientes.ContainsKey(nombre))
@@ -85,9 +81,16 @@ public class Inventory : MonoBehaviour
 
 public enum Ingredientes
 {
-    Carbe,
-    Lechuga,
-    tomate,
-    Papas,
-
+    Carne,
+    LechugaCortada,
+    TomateCortado,
+    PapasCocinadas,
+    PapasCortadas,
+    CarneCruda,
+    LechugaSinCortar,
+    TomateSinCortar,
+    PapasCrudas,
+    Pan
+    
 }
+
