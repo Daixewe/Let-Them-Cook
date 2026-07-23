@@ -83,10 +83,7 @@ public class CropPlot : MonoBehaviour, IInteractable
 
         if (!usedSeed)
         {
-            Debug.Log(
-                $"Necesitas {requiredSeedAmount} de " +
-                $"{requiredSeed} para plantar."
-            );
+            Debug.Log($"Necesitas {requiredSeedAmount} de " +$"{requiredSeed} para plantar.");
 
             return;
         }

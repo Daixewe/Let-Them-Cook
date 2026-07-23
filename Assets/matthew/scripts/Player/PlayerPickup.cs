@@ -30,9 +30,31 @@ public class PlayerPickup : MonoBehaviour
 
         heldItem = item;
 
+        // Colocamos el objeto como hijo del punto de agarre.
         item.transform.SetParent(holdPoint);
-        item.transform.localPosition = Vector3.zero;
-        item.transform.localRotation = Quaternion.identity;
+
+        // Buscamos si el objeto tiene una posición personalizada
+        // para mostrarse correctamente en la mano.
+        HeldItemPose heldPose =item.GetComponent<HeldItemPose>();
+
+        if (heldPose != null)
+        {
+            item.transform.localPosition =
+                heldPose.HeldLocalPosition;
+
+            item.transform.localRotation =
+                heldPose.HeldLocalRotation;
+
+            item.transform.localScale =
+                heldPose.HeldLocalScale;
+        }
+        else
+        {
+            // Si no tiene configuración personalizada,
+            // utilizamos los valores predeterminados.
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+        }
 
         Rigidbody rb = item.GetComponent<Rigidbody>();
 
