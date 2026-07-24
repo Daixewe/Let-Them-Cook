@@ -4,6 +4,7 @@ using System;
 
 public class Inventory : MonoBehaviour
 {
+
     // Diccionario donde se almacena cada ingrediente y su cantidad.
     private Dictionary<Ingredientes, int> listaIngredientes = new();
 
@@ -86,42 +87,65 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    
+
     /// Intenta consumir una cantidad de un ingrediente.
     /// Devuelve true si pudo consumirlo.
     /// Devuelve false si no existe o no hay suficiente cantidad.
-   
+
     public bool IntentarUsarIngrediente(
-        Ingredientes nombre,
-        int cantidadNecesaria)
+    Ingredientes nombre,
+    int cantidadNecesaria)
     {
-        // Validamos que la cantidad solicitada sea correcta.
         if (cantidadNecesaria <= 0)
         {
-            Debug.LogWarning("La cantidad necesaria debe ser mayor que cero.");
+            Debug.LogWarning(
+                "La cantidad necesaria debe ser mayor que cero."
+            );
+
             return false;
         }
 
-        // Verificamos si el ingrediente existe.
-        if (!listaIngredientes.ContainsKey(nombre))
+        if (!listaIngredientes.TryGetValue(
+                nombre,
+                out int cantidadActual))
         {
-            Debug.LogWarning($"No tienes {nombre}.");
+            Debug.LogWarning(
+                $"No tienes {nombre}."
+            );
+
             return false;
         }
 
-        // Verificamos si hay suficientes unidades.
-        if (listaIngredientes[nombre] < cantidadNecesaria)
+        if (cantidadActual < cantidadNecesaria)
         {
-            Debug.LogWarning($"No tienes suficiente {nombre}. " +$"Necesitas {cantidadNecesaria} y " +$"tienes {listaIngredientes[nombre]}.");
+            Debug.LogWarning(
+                $"No tienes suficiente {nombre}. " +
+                $"Necesitas {cantidadNecesaria} y " +
+                $"tienes {cantidadActual}."
+            );
+
             return false;
         }
 
-        // Consumimos la cantidad solicitada.
-        listaIngredientes[nombre] -= cantidadNecesaria;
+        int cantidadRestante =
+            cantidadActual - cantidadNecesaria;
 
-        Debug.Log($"Usaste {cantidadNecesaria} de {nombre}. " +$"Quedan: {listaIngredientes[nombre]}");
+        if (cantidadRestante <= 0)
+        {
+            listaIngredientes.Remove(nombre);
+            cantidadRestante = 0;
+        }
+        else
+        {
+            listaIngredientes[nombre] =
+                cantidadRestante;
+        }
 
-        // Avisamos a la interfaz que el inventario cambió.
+        Debug.Log(
+            $"Usaste {cantidadNecesaria} de {nombre}. " +
+            $"Quedan: {cantidadRestante}"
+        );
+
         OnInventoryChanged?.Invoke();
 
         return true;

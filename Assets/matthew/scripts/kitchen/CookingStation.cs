@@ -3,109 +3,241 @@ using UnityEngine;
 
 public class CookingStation : MonoBehaviour, IInteractable
 {
-    [Header("Referencia al inventario")]
+    [Header("Referencias")]
     [SerializeField] private Inventory playerInventory;
 
-    [Header("Configuración de cocción")]
-    [SerializeField] private float cookingTime = 5f;
+    // Se encarga de mostrar el ingrediente sobre la estación.
+    [SerializeField] private StationIngredientVisual ingredientVisual;
 
-    // Indica si la estación está cocinando actualmente.
+    [Header("Configuración de cocción")]
+    [SerializeField] private float cookingTime = 4f;
+
+    [Header("Efectos opcionales")]
+    [Tooltip("Objeto visual como fuego, humo o luz de la cocina.")]
+    [SerializeField] private GameObject cookingEffect;
+
+    // Ingrediente que se encuentra actualmente en la estación.
+    private Ingredientes currentIngredient;
+
+    // Ingrediente que se obtendrá después de cocinar.
+    private Ingredientes resultingIngredient;
+
+    // Indica que existe un ingrediente sobre la estación.
+    private bool hasIngredient;
+
+    // Indica que el ingrediente está cocinándose.
     private bool isCooking;
 
+    // Indica que el ingrediente terminó de cocinarse.
+    private bool ingredientIsCooked;
+
+    private void Awake()
+    {
+        // El efecto debe comenzar apagado.
+        SetCookingEffect(false);
+    }
+
+    
+    // Se ejecuta cuando el jugador interactúa con la estación.
+    
     public void Interact()
     {
-        // Verificamos que el inventario esté asignado.
-        if (playerInventory == null)
+        if (!ValidateReferences())
         {
-            Debug.LogError("Falta asignar el Inventory del jugador en CookingStation.");
-
             return;
         }
 
-        // Impide comenzar otra cocción mientras la estación está ocupada.
+        // Si la estación está vacía, intenta colocar un ingrediente.
+        if (!hasIngredient)
+        {
+            TryPlaceIngredient();
+            return;
+        }
+
+        // No permite nuevas interacciones mientras cocina.
         if (isCooking)
         {
-            Debug.Log("La estación todavía está cocinando.");
-
+            Debug.Log("El ingrediente todavía se está cocinando.");
             return;
         }
 
-        // Buscamos el primer ingrediente disponible que pueda cocinarse.
-        TryStartCooking();
+        // Si ya terminó de cocinarse, entrega el resultado.
+        if (ingredientIsCooked)
+        {
+            CollectResult();
+            return;
+        }
+
+        // Si hay un ingrediente crudo, comienza la cocción.
+        StartCoroutine(CookIngredient());
     }
 
-    private void TryStartCooking()
+    
+    // Busca en el inventario algún ingrediente que pueda cocinarse.
+    // El primer ingrediente disponible será colocado en la estación.   
+    private void TryPlaceIngredient()
     {
-        // La estación revisa los ingredientes siguiendo este orden.
-        if (TryCookIngredient(Ingredientes.CarneCruda,Ingredientes.Carne))
+        // Carne cruda -> carne cocinada.
+        if (TryUseIngredient(Ingredientes.CarneCruda,Ingredientes.Carne))
         {
             return;
         }
 
-        if (TryCookIngredient(Ingredientes.PapasCortadas,Ingredientes.PapasCocinadas))
+        // Papas cortadas -> papas cocinadas.
+        if (TryUseIngredient(Ingredientes.PapasCortadas,Ingredientes.PapasCocinadas))
         {
             return;
         }
 
-        if (TryCookIngredient(Ingredientes.PlatanoVerdeCortado,Ingredientes.PlatanoVerdeCocinado))
+        // Plátano verde cortado -> plátano verde cocinado.
+        if (TryUseIngredient(Ingredientes.PlatanoVerdeCortado,Ingredientes.PlatanoVerdeCocinado))
         {
             return;
         }
 
-        if (TryCookIngredient(Ingredientes.PlatanoMaduroCortado,Ingredientes.PlatanoMaduroCocinado))
-        {
-            return;
-        }
-        if (TryCookIngredient(Ingredientes.huevo, Ingredientes.huevoCocinado))
+        // Plátano maduro cortado -> plátano maduro cocinado.
+        if (TryUseIngredient(Ingredientes.PlatanoMaduroCortado,Ingredientes.PlatanoMaduroCocinado))
         {
             return;
         }
 
-        // Aparece cuando el jugador no tiene ningún ingrediente cocinable.
-        Debug.LogWarning(
-            "No tienes ningún ingrediente que se pueda cocinar."
-        );
+        Debug.Log("No tienes ningún ingrediente que pueda cocinarse.");
     }
 
-    private bool TryCookIngredient(Ingredientes ingredienteCrudo,Ingredientes ingredienteCocinado)
+    
+    // Comprueba si existe un ingrediente en el inventario.
+    // Si existe, lo consume y muestra su visual en la estación.
+    
+    private bool TryUseIngredient(Ingredientes originalIngredient,Ingredientes cookedResult)
     {
-        // Revisamos si el jugador tiene el ingrediente necesario.
-        if (playerInventory.ObtenerCantidad(ingredienteCrudo) <= 0)
+        bool ingredientUsed =
+            playerInventory.IntentarUsarIngrediente(originalIngredient,1);
+
+        if (!ingredientUsed)
         {
             return false;
         }
 
-        // Intentamos consumir una unidad del ingrediente crudo.
-        bool ingredienteConsumido =
-            playerInventory.IntentarUsarIngrediente(ingredienteCrudo,1);
+        currentIngredient = originalIngredient;
+        resultingIngredient = cookedResult;
 
-        // Si no pudo consumirse, no iniciamos la cocción.
-        if (!ingredienteConsumido)
+        // Muestra el ingrediente crudo en la estación.
+        bool visualShown =ingredientVisual.ShowIngredient(currentIngredient);
+
+        // Si falta el visual, devuelve el ingrediente al inventario.
+        if (!visualShown)
         {
+            playerInventory.AñadirIngrediente(originalIngredient,1);
+
+            Debug.LogError($"No se pudo mostrar el visual de " +$"{originalIngredient}.");
+
+            ResetStation();
             return false;
         }
 
-        // Iniciamos el proceso de cocción.
-        StartCoroutine(CookingProcess(ingredienteCrudo,ingredienteCocinado));
+        hasIngredient = true;
+        isCooking = false;
+        ingredientIsCooked = false;
+
+        Debug.Log($"{originalIngredient} fue colocado en la cocina.");
+
         return true;
     }
 
-    private IEnumerator CookingProcess(Ingredientes ingredienteCrudo,Ingredientes ingredienteCocinado)
+    
+    // Cocina el ingrediente durante el tiempo configurado.
+    
+    private IEnumerator CookIngredient()
     {
-        // Marcamos la estación como ocupada.
         isCooking = true;
 
-        Debug.Log($"Comenzando a cocinar {ingredienteCrudo}. " +$"Tiempo necesario: {cookingTime} segundos.");
+        SetCookingEffect(true);
 
-        // Esperamos el tiempo configurado en el Inspector.
+        Debug.Log($"Comenzando a cocinar {currentIngredient}.");
+
         yield return new WaitForSeconds(cookingTime);
 
-        // Al finalizar, agregamos el ingrediente cocinado.
-        playerInventory.AñadirIngrediente(ingredienteCocinado,1);
+        // Reemplaza el visual crudo por el visual cocinado.
+        bool resultVisualShown =
+            ingredientVisual.ShowIngredient(resultingIngredient);
 
-        // La estación vuelve a quedar disponible.
+        if (!resultVisualShown)
+        {
+            Debug.LogError($"No existe un visual configurado para " +$"{resultingIngredient}.");
+
+            SetCookingEffect(false);
+            isCooking = false;
+
+            yield break;
+        }
+
+        SetCookingEffect(false);
+
         isCooking = false;
+        ingredientIsCooked = true;
 
-        Debug.Log($"Terminaste de cocinar {ingredienteCrudo}. " +$"Recibiste 1 de {ingredienteCocinado}.");
+        Debug.Log($"{currentIngredient} fue convertido en " +$"{resultingIngredient}.");
+    }
+
+    
+    // Agrega el resultado cocinado al inventario
+    // y deja la estación vacía.
+    
+    private void CollectResult()
+    {
+        playerInventory.AñadirIngrediente(resultingIngredient,1);
+
+        ingredientVisual.ClearVisual();
+
+        Debug.Log($"Recogiste {resultingIngredient} de la cocina.");
+
+        ResetStation();
+    }
+
+    
+    // Activa o desactiva el efecto visual de cocción.    
+    private void SetCookingEffect(bool active)
+    {
+        if (cookingEffect != null)
+        {
+            cookingEffect.SetActive(active);
+        }
+    }
+
+     
+    // Reinicia todas las variables internas de la estación.
+   
+    private void ResetStation()
+    {
+        hasIngredient = false;
+        isCooking = false;
+        ingredientIsCooked = false;
+
+        currentIngredient = default;
+        resultingIngredient = default;
+
+        SetCookingEffect(false);
+    }
+
+    
+    // Comprueba que las referencias importantes estén asignadas.
+    
+    private bool ValidateReferences()
+    {
+        if (playerInventory == null)
+        {
+            Debug.LogError("Falta asignar Player Inventory en CookingStation.");
+
+            return false;
+        }
+
+        if (ingredientVisual == null)
+        {
+            Debug.LogError("Falta asignar StationIngredientVisual " +"en CookingStation.");
+
+            return false;
+        }
+
+        return true;
     }
 }

@@ -11,8 +11,11 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
     [SerializeField] private float rightOpenAngle = 100f;
     [SerializeField] private float rotationSpeed = 180f;
 
+    [Header("Jugador")]
+    [SerializeField] private PlayerPickup playerPickup;
+
     [Header("Almacenamiento")]
-    [SerializeField] private Transform eggPlacementPoint;
+    [SerializeField] private FridgeStorage fridgeStorage;
 
     private Quaternion leftClosedRotation;
     private Quaternion rightClosedRotation;
@@ -20,135 +23,155 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
     private Quaternion rightOpenRotation;
 
     private bool isOpen;
-    private PickupItem storedEgg;
 
     private void Awake()
     {
-        leftClosedRotation = leftDoorPivot.localRotation;
-        rightClosedRotation = rightDoorPivot.localRotation;
+        if (leftDoorPivot != null)
+        {
+            leftClosedRotation = leftDoorPivot.localRotation;
 
-        leftOpenRotation =
-            leftClosedRotation * Quaternion.Euler(0f, leftOpenAngle, 0f);
+            leftOpenRotation =
+                leftClosedRotation *
+                Quaternion.Euler(
+                    0f,
+                    leftOpenAngle,
+                    0f
+                );
+        }
 
-        rightOpenRotation =
-            rightClosedRotation * Quaternion.Euler(0f, rightOpenAngle, 0f);
+        if (rightDoorPivot != null)
+        {
+            rightClosedRotation = rightDoorPivot.localRotation;
+
+            rightOpenRotation =
+                rightClosedRotation *
+                Quaternion.Euler(
+                    0f,
+                    rightOpenAngle,
+                    0f
+                );
+        }
     }
 
     private void Update()
     {
-        Quaternion targetLeft =
-            isOpen ? leftOpenRotation : leftClosedRotation;
-
-        Quaternion targetRight =
-            isOpen ? rightOpenRotation : rightClosedRotation;
-
-        leftDoorPivot.localRotation = Quaternion.RotateTowards(
-            leftDoorPivot.localRotation,
-            targetLeft,
-            rotationSpeed * Time.deltaTime
-        );
-
-        rightDoorPivot.localRotation = Quaternion.RotateTowards(
-            rightDoorPivot.localRotation,
-            targetRight,
-            rotationSpeed * Time.deltaTime
-        );
+        RotateDoors();
     }
 
     public void Interact()
     {
-        PlayerPickup playerPickup = FindFirstObjectByType<PlayerPickup>();
-
-        if (playerPickup == null)
+        if (!ValidateReferences())
         {
-            Debug.LogWarning("No se encontró PlayerPickup.");
             return;
         }
 
-        // Si está cerrada, primero se abre.
-        if (!isOpen)
-        {
-            isOpen = true;
-            return;
-        }
-
-        // Si el jugador sostiene algo, intenta guardarlo.
         if (playerPickup.HasItem())
         {
-            TryStoreEgg(playerPickup);
+            Debug.Log(
+                "Debes tener la mano vacía para usar la refrigeradora."
+            );
+
             return;
         }
 
-        // Si tiene las manos vacías y hay un huevo, lo recoge.
-        if (storedEgg != null)
+        // Primera interacción: abre la refri.
+        if (!isOpen)
         {
-            TakeStoredEgg(playerPickup);
+            OpenFridge();
             return;
         }
 
-        // Si está abierta, vacía y el jugador no sostiene nada, se cierra.
+        // Segunda interacción:
+        // guarda un ingrediente en el primer Slot disponible.
+        TryStoreIngredient();
+    }
+
+    private void OpenFridge()
+    {
+        isOpen = true;
+
+        Debug.Log("Refrigeradora abierta.");
+    }
+
+    private void TryStoreIngredient()
+    {
+        bool storedSuccessfully =
+            fridgeStorage.StoreFirstAvailableIngredient();
+
+        if (storedSuccessfully)
+        {
+            Debug.Log(
+                "Ingrediente guardado en la refrigeradora."
+            );
+        }
+        else
+        {
+            Debug.Log(
+                "No se pudo guardar ningún ingrediente."
+            );
+        }
+    }
+
+    public void CloseFridge()
+    {
         isOpen = false;
+
+        Debug.Log("Refrigeradora cerrada.");
     }
 
-    private void TryStoreEgg(PlayerPickup playerPickup)
+    private void RotateDoors()
     {
-        if (storedEgg != null)
+        if (leftDoorPivot != null)
         {
-            Debug.Log("Ya hay un huevo dentro de la refrigeradora.");
-            return;
+            Quaternion targetLeft =
+                isOpen
+                    ? leftOpenRotation
+                    : leftClosedRotation;
+
+            leftDoorPivot.localRotation =
+                Quaternion.RotateTowards(
+                    leftDoorPivot.localRotation,
+                    targetLeft,
+                    rotationSpeed * Time.deltaTime
+                );
         }
 
-        PickupItem heldItem = playerPickup.GetHeldItem();
-
-        if (heldItem == null)
-            return;
-
-        if (!heldItem.TryGetComponent(out EggItem eggItem))
+        if (rightDoorPivot != null)
         {
-            Debug.Log("El objeto sostenido no es un huevo.");
-            return;
+            Quaternion targetRight =
+                isOpen
+                    ? rightOpenRotation
+                    : rightClosedRotation;
+
+            rightDoorPivot.localRotation =
+                Quaternion.RotateTowards(
+                    rightDoorPivot.localRotation,
+                    targetRight,
+                    rotationSpeed * Time.deltaTime
+                );
         }
-
-        PickupItem removedItem = playerPickup.RemoveHeldItem();
-
-        if (removedItem == null)
-            return;
-
-        storedEgg = removedItem;
-
-        storedEgg.transform.SetParent(eggPlacementPoint);
-        storedEgg.transform.localPosition = Vector3.zero;
-        storedEgg.transform.localRotation = Quaternion.identity;
-
-        Rigidbody rb = storedEgg.GetComponent<Rigidbody>();
-
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-            rb.useGravity = false;
-        }
-
-        Collider col = storedEgg.GetComponent<Collider>();
-
-        if (col != null)
-        {
-            col.enabled = false;
-        }
-
-        Debug.Log("Huevo colocado dentro de la refrigeradora.");
     }
 
-
-    private void TakeStoredEgg(PlayerPickup playerPickup)
+    private bool ValidateReferences()
     {
-        if (storedEgg == null)
-            return;
+        if (playerPickup == null)
+        {
+            Debug.LogError(
+                "Falta asignar PlayerPickup en FridgeInteraction."
+            );
 
-        PickupItem eggToTake = storedEgg;
-        storedEgg = null;
+            return false;
+        }
 
-        playerPickup.PickUp(eggToTake);
+        if (fridgeStorage == null)
+        {
+            Debug.LogError(
+                "Falta asignar FridgeStorage en FridgeInteraction."
+            );
 
-        Debug.Log("Huevo recogido de la refrigeradora.");
+            return false;
+        }
+
+        return true;
     }
 }

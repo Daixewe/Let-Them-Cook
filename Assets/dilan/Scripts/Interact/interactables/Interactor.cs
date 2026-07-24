@@ -43,12 +43,8 @@ public class Interactor : MonoBehaviour
             out RaycastHit hit,
             interactorRange))
         {
-            if (!hit.collider.TryGetComponent(
-                out currentInteractable))
-            {
-                currentInteractable =
-                    hit.collider.GetComponentInParent<IInteractable>();
-            }
+            currentInteractable =
+                hit.collider.GetComponentInParent<IInteractable>();
         }
 
         if (currentInteractable != null)
