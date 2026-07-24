@@ -30,6 +30,12 @@ public class FridgeStorage : MonoBehaviour
 
     public int Capacity => slots.Count;
 
+    private void Start()//prueba
+    {
+        StoreIngredient(Ingredientes.CarneCruda);
+        StoreIngredient(Ingredientes.huevo);
+    }
+
     public int OccupiedSlots
     {
         get
@@ -52,26 +58,20 @@ public class FridgeStorage : MonoBehaviour
     public int FreeSlots =>
         Capacity - OccupiedSlots;
 
-    public bool StoreIngredient(
-        Ingredientes ingredient)
+    public bool StoreIngredient(Ingredientes ingredient)
     {
         if (playerInventory == null)
         {
-            Debug.LogError(
-                "Falta asignar Player Inventory en FridgeStorage."
-            );
+            Debug.LogError("Falta asignar Player Inventory en FridgeStorage.");
 
             return false;
         }
 
-        FridgeSlot freeSlot =
-            GetFirstFreeSlot();
+        FridgeSlot freeSlot =GetFirstFreeSlot();
 
         if (freeSlot == null)
         {
-            Debug.Log(
-                "La refrigeradora está llena."
-            );
+            Debug.Log("La refrigeradora está llena.");
 
             return false;
         }
@@ -79,21 +79,14 @@ public class FridgeStorage : MonoBehaviour
         IngredientVisualData visualData =
             GetVisualData(ingredient);
 
-        if (visualData == null ||
-            visualData.visualPrefab == null)
+        if (visualData == null || visualData.visualPrefab == null)
         {
-            Debug.LogWarning(
-                $"No existe un visual configurado para {ingredient}."
-            );
+            Debug.LogWarning($"No existe un visual configurado para {ingredient}.");
 
             return false;
         }
 
-        bool removedFromInventory =
-            playerInventory.IntentarUsarIngrediente(
-                ingredient,
-                1
-            );
+        bool removedFromInventory =playerInventory.IntentarUsarIngrediente(ingredient,1);
 
         if (!removedFromInventory)
         {
@@ -104,14 +97,7 @@ public class FridgeStorage : MonoBehaviour
             return false;
         }
 
-        bool storedSuccessfully =
-            freeSlot.StoreIngredient(
-                ingredient,
-                visualData.visualPrefab,
-                visualData.localPosition,
-                visualData.localRotation,
-                visualData.localScale
-            );
+        bool storedSuccessfully =freeSlot.StoreIngredient(ingredient,visualData.visualPrefab,visualData.localPosition, visualData.localRotation,visualData.localScale);
 
         if (!storedSuccessfully)
         {
@@ -129,8 +115,7 @@ public class FridgeStorage : MonoBehaviour
         return true;
     }
 
-    public bool TakeIngredient(
-        Ingredientes ingredient)
+    public bool TakeIngredient(Ingredientes ingredient)
     {
         if (playerInventory == null)
         {
@@ -169,8 +154,7 @@ public class FridgeStorage : MonoBehaviour
         return true;
     }
 
-    public bool TakeIngredientFromSlot(
-        FridgeSlot slot)
+    public bool TakeIngredientFromSlot(FridgeSlot slot)
     {
         if (slot == null ||
             !slot.IsOccupied)
@@ -203,8 +187,7 @@ public class FridgeStorage : MonoBehaviour
         return true;
     }
 
-    public int GetStoredAmount(
-        Ingredientes ingredient)
+    public int GetStoredAmount(Ingredientes ingredient)
     {
         int amount = 0;
 
@@ -220,19 +203,15 @@ public class FridgeStorage : MonoBehaviour
         return amount;
     }
 
-    public bool ContainsIngredient(
-        Ingredientes ingredient,
-        int requiredAmount = 1)
+    public bool ContainsIngredient(Ingredientes ingredient,int requiredAmount = 1)
     {
         return GetStoredAmount(ingredient) >=
                requiredAmount;
     }
 
-    public Dictionary<Ingredientes, int>
-        GetStoredIngredients()
+    public Dictionary<Ingredientes, int>GetStoredIngredients()
     {
-        Dictionary<Ingredientes, int> contents =
-            new();
+        Dictionary<Ingredientes, int> contents =new();
 
         foreach (FridgeSlot slot in slots)
         {

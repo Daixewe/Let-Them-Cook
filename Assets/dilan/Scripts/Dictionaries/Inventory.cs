@@ -12,6 +12,15 @@ public class Inventory : MonoBehaviour
     // La interfaz se suscribirá a este evento para actualizarse.
     public event Action OnInventoryChanged;
 
+
+    private void Start()//prueba
+    {
+        AñadirIngrediente(Ingredientes.CarneCruda, 3);
+        AñadirIngrediente(Ingredientes.huevo, 2);
+        
+        AñadirIngrediente(Ingredientes.TomateSinCortar, 2);
+    }
+
     public void AñadirIngrediente(Ingredientes nombre, int cantidad)
     {
         // Evitamos agregar cantidades inválidas.
@@ -164,6 +173,11 @@ public class Inventory : MonoBehaviour
             // Avisamos a la interfaz que el inventario cambió.
             OnInventoryChanged?.Invoke();
         }
+    }
+
+    public Dictionary<Ingredientes, int> GetIngredients()
+    {
+        return new Dictionary<Ingredientes, int>(listaIngredientes);
     }
 }
 
