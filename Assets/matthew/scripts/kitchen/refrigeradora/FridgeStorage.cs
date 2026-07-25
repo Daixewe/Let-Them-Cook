@@ -30,12 +30,6 @@ public class FridgeStorage : MonoBehaviour
 
     public int Capacity => slots.Count;
 
-    private void Start()//prueba
-    {
-        StoreIngredient(Ingredientes.CarneCruda);
-        StoreIngredient(Ingredientes.huevo);
-    }
-
     public int OccupiedSlots
     {
         get
@@ -44,8 +38,7 @@ public class FridgeStorage : MonoBehaviour
 
             foreach (FridgeSlot slot in slots)
             {
-                if (slot != null &&
-                    slot.IsOccupied)
+                if (slot != null &&slot.IsOccupied)
                 {
                     occupied++;
                 }
@@ -55,8 +48,7 @@ public class FridgeStorage : MonoBehaviour
         }
     }
 
-    public int FreeSlots =>
-        Capacity - OccupiedSlots;
+    public int FreeSlots => Capacity - OccupiedSlots;
 
     public bool StoreIngredient(Ingredientes ingredient)
     {
@@ -76,8 +68,7 @@ public class FridgeStorage : MonoBehaviour
             return false;
         }
 
-        IngredientVisualData visualData =
-            GetVisualData(ingredient);
+        IngredientVisualData visualData =GetVisualData(ingredient);
 
         if (visualData == null || visualData.visualPrefab == null)
         {
@@ -90,9 +81,7 @@ public class FridgeStorage : MonoBehaviour
 
         if (!removedFromInventory)
         {
-            Debug.Log(
-                $"No tienes {ingredient} en el inventario."
-            );
+            Debug.Log($"No tienes {ingredient} en el inventario.");
 
             return false;
         }
@@ -102,10 +91,7 @@ public class FridgeStorage : MonoBehaviour
         if (!storedSuccessfully)
         {
             // Devolvemos el ingrediente para evitar perderlo.
-            playerInventory.AñadirIngrediente(
-                ingredient,
-                1
-            );
+            playerInventory.AñadirIngrediente(ingredient,1);
 
             return false;
         }
@@ -119,9 +105,7 @@ public class FridgeStorage : MonoBehaviour
     {
         if (playerInventory == null)
         {
-            Debug.LogError(
-                "Falta asignar Player Inventory en FridgeStorage."
-            );
+            Debug.LogError("Falta asignar Player Inventory en FridgeStorage.");
 
             return false;
         }
@@ -131,23 +115,17 @@ public class FridgeStorage : MonoBehaviour
 
         if (matchingSlot == null)
         {
-            Debug.Log(
-                $"No hay {ingredient} dentro de la refrigeradora."
-            );
+            Debug.Log($"No hay {ingredient} dentro de la refrigeradora.");
 
             return false;
         }
 
-        if (!matchingSlot.RemoveIngredient(
-                out Ingredientes removedIngredient))
+        if (!matchingSlot.RemoveIngredient(out Ingredientes removedIngredient))
         {
             return false;
         }
 
-        playerInventory.AñadirIngrediente(
-            removedIngredient,
-            1
-        );
+        playerInventory.AñadirIngrediente(removedIngredient,1);
 
         OnStorageChanged?.Invoke();
 
@@ -156,31 +134,24 @@ public class FridgeStorage : MonoBehaviour
 
     public bool TakeIngredientFromSlot(FridgeSlot slot)
     {
-        if (slot == null ||
-            !slot.IsOccupied)
+        if (slot == null || !slot.IsOccupied)
         {
             return false;
         }
 
         if (playerInventory == null)
         {
-            Debug.LogError(
-                "Falta asignar Player Inventory en FridgeStorage."
-            );
+            Debug.LogError("Falta asignar Player Inventory en FridgeStorage.");
 
             return false;
         }
 
-        if (!slot.RemoveIngredient(
-                out Ingredientes removedIngredient))
+        if (!slot.RemoveIngredient(out Ingredientes removedIngredient))
         {
             return false;
         }
 
-        playerInventory.AñadirIngrediente(
-            removedIngredient,
-            1
-        );
+        playerInventory.AñadirIngrediente(removedIngredient,1);
 
         OnStorageChanged?.Invoke();
 
@@ -193,8 +164,7 @@ public class FridgeStorage : MonoBehaviour
 
         foreach (FridgeSlot slot in slots)
         {
-            if (slot != null &&
-                slot.ContainsIngredient(ingredient))
+            if (slot != null && slot.ContainsIngredient(ingredient))
             {
                 amount++;
             }
@@ -205,8 +175,7 @@ public class FridgeStorage : MonoBehaviour
 
     public bool ContainsIngredient(Ingredientes ingredient,int requiredAmount = 1)
     {
-        return GetStoredAmount(ingredient) >=
-               requiredAmount;
+        return GetStoredAmount(ingredient) >=requiredAmount;
     }
 
     public Dictionary<Ingredientes, int>GetStoredIngredients()
@@ -215,14 +184,12 @@ public class FridgeStorage : MonoBehaviour
 
         foreach (FridgeSlot slot in slots)
         {
-            if (slot == null ||
-                !slot.IsOccupied)
+            if (slot == null ||!slot.IsOccupied)
             {
                 continue;
             }
 
-            Ingredientes ingredient =
-                slot.StoredIngredient;
+            Ingredientes ingredient =slot.StoredIngredient;
 
             if (contents.ContainsKey(ingredient))
             {
@@ -241,8 +208,7 @@ public class FridgeStorage : MonoBehaviour
     {
         foreach (FridgeSlot slot in slots)
         {
-            if (slot != null &&
-                !slot.IsOccupied)
+            if (slot != null &&!slot.IsOccupied)
             {
                 return slot;
             }
@@ -251,13 +217,11 @@ public class FridgeStorage : MonoBehaviour
         return null;
     }
 
-    private FridgeSlot GetSlotContaining(
-        Ingredientes ingredient)
+    private FridgeSlot GetSlotContaining(Ingredientes ingredient)
     {
         foreach (FridgeSlot slot in slots)
         {
-            if (slot != null &&
-                slot.ContainsIngredient(ingredient))
+            if (slot != null &&slot.ContainsIngredient(ingredient))
             {
                 return slot;
             }
@@ -266,15 +230,11 @@ public class FridgeStorage : MonoBehaviour
         return null;
     }
 
-    private IngredientVisualData GetVisualData(
-        Ingredientes ingredient)
+    private IngredientVisualData GetVisualData(Ingredientes ingredient)
     {
-        foreach (
-            IngredientVisualData visualData
-            in ingredientVisuals)
+        foreach (IngredientVisualData visualData in ingredientVisuals)
         {
-            if (visualData.ingredient.Equals(
-                    ingredient))
+            if (visualData.ingredient.Equals(ingredient))
             {
                 return visualData;
             }
@@ -290,22 +250,17 @@ public class FridgeStorage : MonoBehaviour
             return false;
         }
 
-        foreach (Ingredientes ingredient
-                 in Enum.GetValues(typeof(Ingredientes)))
+        foreach (Ingredientes ingredient in Enum.GetValues(typeof(Ingredientes)))
         {
-            if (playerInventory.ObtenerCantidad(
-                    ingredient) > 0)
+            if (playerInventory.ObtenerCantidad(ingredient) > 0)
             {
                 return StoreIngredient(ingredient);
             }
         }
 
-        Debug.Log(
-            "El jugador no tiene ingredientes para guardar."
-        );
+        Debug.Log("El jugador no tiene ingredientes para guardar.");
 
         return false;
     }
-
-    
+   
 }

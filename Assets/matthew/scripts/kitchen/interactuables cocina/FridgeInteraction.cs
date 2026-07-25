@@ -64,9 +64,7 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
 
         if (playerPickup.HasItem())
         {
-            Debug.Log(
-                "Debes tener la mano vacía para usar la refrigeradora."
-            );
+            Debug.Log("Debes tener la mano vacía para usar la refrigeradora.");
 
             return;
         }
@@ -86,7 +84,7 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
     {
         isOpen = true;
 
-        Debug.Log("Refrigeradora abierta.");
+        
     }
 
     private void OpenStorage()
@@ -98,19 +96,22 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
             return;
         }
 
-        Debug.Log("Abriendo interfaz de la refrigeradora.");
-
         fridgeUI.Open();
+    }
+
+    public void CloseDoors()
+    {
+        isOpen = false;
     }
 
     public void CloseFridge()
     {
         if (fridgeUI != null && fridgeUI.IsOpen)
         {
-            fridgeUI.Close();
+            fridgeUI.CloseUIOnly();
         }
 
-        isOpen = false;
+        CloseDoors();
 
         Debug.Log("Refrigeradora cerrada.");
     }

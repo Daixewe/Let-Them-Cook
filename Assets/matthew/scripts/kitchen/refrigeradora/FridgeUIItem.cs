@@ -25,24 +25,15 @@ public class FridgeUIItem : MonoBehaviour
     {
         if (actionButton != null)
         {
-            actionButton.onClick.AddListener(
-                ExecuteAction
-            );
+            actionButton.onClick.AddListener(ExecuteAction);
         }
         else
         {
-            Debug.LogError(
-                "Falta asignar Action Button en FridgeUIItem."
-            );
+            Debug.LogError("Falta asignar Action Button en FridgeUIItem.");
         }
     }
 
-    public void Configure(
-        Ingredientes newIngredient,
-        Sprite icon,
-        int amount,
-        ItemAction action,
-        FridgeUI owner)
+    public void Configure(Ingredientes newIngredient,Sprite icon,int amount,ItemAction action,FridgeUI owner)
     {
         ingredient = newIngredient;
         currentAction = action;
@@ -56,10 +47,7 @@ public class FridgeUIItem : MonoBehaviour
 
         if (ingredientNameText != null)
         {
-            ingredientNameText.text =
-                GetReadableIngredientName(
-                    newIngredient
-                );
+            ingredientNameText.text =GetReadableIngredientName(newIngredient);
         }
 
         if (amountText != null)
@@ -69,18 +57,13 @@ public class FridgeUIItem : MonoBehaviour
 
         if (actionText != null)
         {
-            actionText.text =
-                currentAction == ItemAction.Store
-                    ? "Guardar"
-                    : "Retirar";
+            actionText.text =currentAction == ItemAction.Store? "Guardar": "Retirar";
         }
     }
 
     private void ExecuteAction()
     {
-        Debug.Log(
-         $"CLICK: {ingredient} | Acción: {currentAction}"
-     );
+        
 
         if (fridgeUI == null)
         {
@@ -97,26 +80,6 @@ public class FridgeUIItem : MonoBehaviour
             fridgeUI.TakeIngredient(ingredient);
         }
     }
-    /*private void ExecuteAction()
-    {
-        if (fridgeUI == null)
-        {
-            Debug.LogError(
-                "FridgeUI no está asignado en FridgeUIItem."
-            );
-
-            return;
-        }
-
-        if (currentAction == ItemAction.Store)
-        {
-            fridgeUI.StoreIngredient(ingredient);
-        }
-        else
-        {
-            fridgeUI.TakeIngredient(ingredient);
-        }
-    }*/
 
     private string GetReadableIngredientName(
         Ingredientes value)

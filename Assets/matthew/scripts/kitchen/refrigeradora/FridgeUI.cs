@@ -33,6 +33,9 @@ public class FridgeUI : MonoBehaviour
     [Header("Prefab")]
     [SerializeField] private FridgeUIItem itemPrefab;
 
+    [Header("Refrigeradora")]
+    [SerializeField] private FridgeInteraction fridgeInteraction;
+
     [Header("Iconos")]
     [SerializeField]
     private List<IngredientIconData> ingredientIcons =
@@ -45,8 +48,7 @@ public class FridgeUI : MonoBehaviour
     {
         get
         {
-            return uiPanel != null &&
-                   uiPanel.activeSelf;
+            return uiPanel != null && uiPanel.activeSelf;
         }
     }
 
@@ -141,31 +143,29 @@ public class FridgeUI : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (fridgeInteraction != null)
+        {
+            fridgeInteraction.CloseDoors();
+        }
     }
 
-    public void StoreIngredient(
-        Ingredientes ingredient)
+    public void StoreIngredient(Ingredientes ingredient)
     {
         if (fridgeStorage == null)
         {
             return;
         }
 
-        bool storedSuccessfully =
-            fridgeStorage.StoreIngredient(
-                ingredient
-            );
+        bool storedSuccessfully =fridgeStorage.StoreIngredient(ingredient);
 
         if (storedSuccessfully)
         {
-            Debug.Log(
-                $"{ingredient} guardado en la refrigeradora."
-            );
+            Debug.Log($"{ingredient} guardado en la refrigeradora.");
         }
     }
 
-    public void TakeIngredient(
-        Ingredientes ingredient)
+    public void TakeIngredient(Ingredientes ingredient)
     {
         if (fridgeStorage == null)
         {
@@ -173,15 +173,11 @@ public class FridgeUI : MonoBehaviour
         }
 
         bool takenSuccessfully =
-            fridgeStorage.TakeIngredient(
-                ingredient
-            );
+            fridgeStorage.TakeIngredient(ingredient);
 
         if (takenSuccessfully)
         {
-            Debug.Log(
-                $"{ingredient} retirado de la refrigeradora."
-            );
+            Debug.Log($"{ingredient} retirado de la refrigeradora.");
         }
     }
 
@@ -200,18 +196,13 @@ public class FridgeUI : MonoBehaviour
 
     private void GeneratePlayerInventory()
     {
-        Dictionary<Ingredientes, int> ingredients =
-            playerInventory.GetIngredients();
+        Dictionary<Ingredientes, int> ingredients = playerInventory.GetIngredients();
 
-        bool inventoryIsEmpty =
-            ingredients == null ||
-            ingredients.Count == 0;
+        bool inventoryIsEmpty =ingredients == null ||ingredients.Count == 0;
 
         if (playerEmptyText != null)
         {
-            playerEmptyText.SetActive(
-                inventoryIsEmpty
-            );
+            playerEmptyText.SetActive(inventoryIsEmpty);
         }
 
         if (inventoryIsEmpty)
@@ -219,38 +210,26 @@ public class FridgeUI : MonoBehaviour
             return;
         }
 
-        foreach (
-            KeyValuePair<Ingredientes, int> item
-            in ingredients)
+        foreach (KeyValuePair<Ingredientes, int> item in ingredients)
         {
             if (item.Value <= 0)
             {
                 continue;
             }
 
-            CreateUIItem(
-                item.Key,
-                item.Value,
-                playerContentsParent,
-                FridgeUIItem.ItemAction.Store
-            );
+            CreateUIItem(item.Key,item.Value,playerContentsParent,FridgeUIItem.ItemAction.Store);
         }
     }
 
     private void GenerateFridgeInventory()
     {
-        Dictionary<Ingredientes, int> ingredients =
-            fridgeStorage.GetStoredIngredients();
+        Dictionary<Ingredientes, int> ingredients =fridgeStorage.GetStoredIngredients();
 
-        bool fridgeIsEmpty =
-            ingredients == null ||
-            ingredients.Count == 0;
+        bool fridgeIsEmpty =ingredients == null ||ingredients.Count == 0;
 
         if (fridgeEmptyText != null)
         {
-            fridgeEmptyText.SetActive(
-                fridgeIsEmpty
-            );
+            fridgeEmptyText.SetActive(fridgeIsEmpty);
         }
 
         if (fridgeIsEmpty)
@@ -258,57 +237,31 @@ public class FridgeUI : MonoBehaviour
             return;
         }
 
-        foreach (
-            KeyValuePair<Ingredientes, int> item
-            in ingredients)
+        foreach (KeyValuePair<Ingredientes, int> item in ingredients)
         {
-            CreateUIItem(
-                item.Key,
-                item.Value,
-                fridgeContentsParent,
-                FridgeUIItem.ItemAction.Take
-            );
+            CreateUIItem(item.Key,item.Value,fridgeContentsParent,FridgeUIItem.ItemAction.Take);
         }
     }
 
-    private void CreateUIItem(
-        Ingredientes ingredient,
-        int amount,
-        Transform parent,
-        FridgeUIItem.ItemAction action)
+    private void CreateUIItem(Ingredientes ingredient,int amount,Transform parent,FridgeUIItem.ItemAction action)
     {
-        if (parent == null ||
-            itemPrefab == null)
+        if (parent == null ||itemPrefab == null)
         {
             return;
         }
 
-        FridgeUIItem newItem =
-            Instantiate(
-                itemPrefab,
-                parent
-            );
+        FridgeUIItem newItem =Instantiate(itemPrefab,parent);
 
-        newItem.Configure(
-            ingredient,
-            GetIngredientIcon(ingredient),
-            amount,
-            action,
-            this
-        );
+        newItem.Configure(ingredient,GetIngredientIcon(ingredient),amount,action,this);
 
         generatedItems.Add(newItem);
     }
 
-    private Sprite GetIngredientIcon(
-        Ingredientes ingredient)
+    private Sprite GetIngredientIcon(Ingredientes ingredient)
     {
-        foreach (
-            IngredientIconData iconData
-            in ingredientIcons)
+        foreach (IngredientIconData iconData in ingredientIcons)
         {
-            if (iconData.ingredient ==
-                ingredient)
+            if (iconData.ingredient == ingredient)
             {
                 return iconData.icon;
             }
@@ -319,73 +272,85 @@ public class FridgeUI : MonoBehaviour
 
     private void ClearGeneratedItems()
     {
-        foreach (
-            FridgeUIItem generatedItem
-            in generatedItems)
+        foreach (FridgeUIItem generatedItem in generatedItems)
         {
             if (generatedItem != null)
             {
-                Destroy(
-                    generatedItem.gameObject
-                );
+                Destroy(generatedItem.gameObject);
             }
         }
 
         generatedItems.Clear();
     }
 
+    public void CloseUIOnly()
+    {
+        uiPanel.SetActive(false);
+
+        if (playerInteractor != null)
+        {
+            playerInteractor.enabled = true;
+        }
+
+        if (playerController != null)
+        {
+            playerController.enabled = true;
+        }
+
+        if (crosshair != null)
+        {
+            crosshair.SetActive(true);
+        }
+
+        if (interactionText != null)
+        {
+            interactionText.SetActive(true);
+        }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     private bool ValidateReferences()
     {
         if (uiPanel == null)
         {
-            Debug.LogError(
-                "Falta asignar UI Panel en FridgeUI."
-            );
+            Debug.LogError( "Falta asignar UI Panel en FridgeUI.");
 
             return false;
         }
 
         if (fridgeStorage == null)
         {
-            Debug.LogError(
-                "Falta asignar Fridge Storage en FridgeUI."
-            );
+            Debug.LogError("Falta asignar Fridge Storage en FridgeUI.");
 
             return false;
         }
 
         if (playerInventory == null)
         {
-            Debug.LogError(
-                "Falta asignar Player Inventory en FridgeUI."
-            );
+            Debug.LogError("Falta asignar Player Inventory en FridgeUI.");
 
             return false;
         }
 
         if (playerContentsParent == null)
         {
-            Debug.LogError(
-                "Falta asignar Player Contents Parent."
-            );
+            Debug.LogError("Falta asignar Player Contents Parent.");
 
             return false;
         }
 
         if (fridgeContentsParent == null)
         {
-            Debug.LogError(
-                "Falta asignar Fridge Contents Parent."
-            );
+            Debug.LogError( "Falta asignar Fridge Contents Parent.");
 
             return false;
         }
 
         if (itemPrefab == null)
         {
-            Debug.LogError(
-                "Falta asignar Item Prefab."
-            );
+            Debug.LogError("Falta asignar Item Prefab.");
 
             return false;
         }

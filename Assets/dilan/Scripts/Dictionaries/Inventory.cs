@@ -13,13 +13,7 @@ public class Inventory : MonoBehaviour
     public event Action OnInventoryChanged;
 
 
-    private void Start()//prueba
-    {
-        AñadirIngrediente(Ingredientes.CarneCruda, 3);
-        AñadirIngrediente(Ingredientes.huevo, 2);
-        
-        AñadirIngrediente(Ingredientes.TomateSinCortar, 2);
-    }
+    
 
     public void AñadirIngrediente(Ingredientes nombre, int cantidad)
     {
