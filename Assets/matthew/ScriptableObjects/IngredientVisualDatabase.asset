@@ -47,9 +47,9 @@ MonoBehaviour:
     visualPrefab: {fileID: 1902271098695974524, guid: 2c25d42adeb174049963f6df4c9b7c9a, type: 3}
     localPosition: {x: 0, y: 0, z: 0}
     localRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 0.2, y: 0.2, z: 0.2}
   - ingredient: 0
     visualPrefab: {fileID: 9201863178861168795, guid: 417983b33f84f1044a4804d1ec12f883, type: 3}
     localPosition: {x: 0, y: 0, z: 0}
     localRotation: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 0.2, y: 0.2, z: 0.2}
