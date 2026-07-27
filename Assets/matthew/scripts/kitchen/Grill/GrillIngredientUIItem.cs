@@ -39,7 +39,7 @@ public class GrillIngredientUIItem : MonoBehaviour
 
         if (ingredientNameText != null)
         {
-            ingredientNameText.text = GetDisplayName(newIngredient);
+            ingredientNameText.text = IngredientDisplayName.Get(ingredient);
         }
 
         if (quantityText != null)

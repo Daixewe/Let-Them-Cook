@@ -47,7 +47,7 @@ public class FridgeUIItem : MonoBehaviour
 
         if (ingredientNameText != null)
         {
-            ingredientNameText.text =GetReadableIngredientName(newIngredient);
+            ingredientNameText.text = IngredientDisplayName.Get(newIngredient);
         }
 
         if (amountText != null)
@@ -78,79 +78,6 @@ public class FridgeUIItem : MonoBehaviour
         else
         {
             fridgeUI.TakeIngredient(ingredient);
-        }
-    }
-
-    private string GetReadableIngredientName(
-        Ingredientes value)
-    {
-        switch (value)
-        {
-            case Ingredientes.Carne:
-                return "Carne";
-
-            case Ingredientes.CarneCruda:
-                return "Carne cruda";
-
-            case Ingredientes.LechugaCortada:
-                return "Lechuga cortada";
-
-            case Ingredientes.LechugaSinCortar:
-                return "Lechuga";
-
-            case Ingredientes.TomateCortado:
-                return "Tomate cortado";
-
-            case Ingredientes.TomateSinCortar:
-                return "Tomate";
-
-            case Ingredientes.PapasCrudas:
-                return "Papas crudas";
-
-            case Ingredientes.PapasCortadas:
-                return "Papas cortadas";
-
-            case Ingredientes.PapasCocinadas:
-                return "Papas cocinadas";
-
-            case Ingredientes.Pan:
-                return "Pan";
-
-            case Ingredientes.huevo:
-                return "Huevo";
-
-            case Ingredientes.huevoCocinado:
-                return "Huevo cocinado";
-
-            case Ingredientes.SemillaTomate:
-                return "Semilla de tomate";
-
-            case Ingredientes.SemillaLechuga:
-                return "Semilla de lechuga";
-
-            case Ingredientes.SemillaPapa:
-                return "Semilla de papa";
-
-            case Ingredientes.PlatanoVerdeSinCortar:
-                return "Plátano verde";
-
-            case Ingredientes.PlatanoVerdeCortado:
-                return "Plátano verde cortado";
-
-            case Ingredientes.PlatanoVerdeCocinado:
-                return "Plátano verde cocinado";
-
-            case Ingredientes.PlatanoMaduroSinCortar:
-                return "Plátano maduro";
-
-            case Ingredientes.PlatanoMaduroCortado:
-                return "Plátano maduro cortado";
-
-            case Ingredientes.PlatanoMaduroCocinado:
-                return "Plátano maduro cocinado";
-
-            default:
-                return value.ToString();
         }
     }
 }

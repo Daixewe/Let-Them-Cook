@@ -70,7 +70,7 @@ public class InventoryUI : MonoBehaviour
                 hasIngredients = true;
 
                 inventoryBuilder.AppendLine(
-                    $"{GetDisplayName(ingrediente)}: {cantidad}"
+                    $"{IngredientDisplayName.Get(ingrediente)}: {cantidad}"
                 );
             }
         }
@@ -85,68 +85,5 @@ public class InventoryUI : MonoBehaviour
         inventoryText.text = inventoryBuilder.ToString();
     }
 
-    private string GetDisplayName(Ingredientes ingrediente)
-    {
-        // Este método permite mostrar nombres más fáciles de leer.
-        switch (ingrediente)
-        {
-            case Ingredientes.CarneCruda:
-                return "Carne cruda";
-
-            case Ingredientes.TomateSinCortar:
-                return "Tomate sin cortar";
-
-            case Ingredientes.TomateCortado:
-                return "Tomate cortado";
-
-            case Ingredientes.LechugaSinCortar:
-                return "Lechuga sin cortar";
-
-            case Ingredientes.LechugaCortada:
-                return "Lechuga cortada";
-
-            case Ingredientes.PapasCrudas:
-                return "Papas crudas";
-
-            case Ingredientes.PapasCortadas:
-                return "Papas cortadas";
-
-            case Ingredientes.PapasCocinadas:
-                return "Papas cocinadas";
-
-            case Ingredientes.SemillaTomate:
-                return "Semillas de tomate";
-
-            case Ingredientes.SemillaLechuga:
-                return "Semillas de lechuga";
-
-            case Ingredientes.SemillaPapa:
-                return "Semillas de papa";
-
-            case Ingredientes.PlatanoVerdeSinCortar:
-                return "Plátano verde sin cortar";
-
-            case Ingredientes.PlatanoVerdeCortado:
-                return "Plátano verde cortado";
-
-            case Ingredientes.PlatanoVerdeCocinado:
-                return "Plátano verde cocinado";
-
-            case Ingredientes.PlatanoMaduroSinCortar:
-                return "Plátano maduro sin cortar";
-
-            case Ingredientes.PlatanoMaduroCortado:
-                return "Plátano maduro cortado";
-
-            case Ingredientes.PlatanoMaduroCocinado:
-                return "Plátano maduro cocinado";
-
-            case Ingredientes.huevo:
-                return "Buebo";
-
-            default:
-                // Para los ingredientes sencillos usamos el nombre del enum.
-                return ingrediente.ToString();
-        }
-    }
+    
 }

@@ -91,11 +91,6 @@ public class CuttingStation : MonoBehaviour, IInteractable
             return;
         }
 
-        if (TryUseIngredient(Ingredientes.PlatanoMaduroSinCortar,Ingredientes.PlatanoMaduroCortado))
-        {
-            return;
-        }
-
         Debug.Log("No tienes ningún ingrediente que pueda cortarse.");
     }
 

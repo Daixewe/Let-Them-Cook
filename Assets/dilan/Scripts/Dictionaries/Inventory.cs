@@ -200,8 +200,7 @@ public enum Ingredientes
     PlatanoVerdeCortado,
     PlatanoVerdeCocinado,
 
-    // Plátano maduro.
-    PlatanoMaduroSinCortar,
-    PlatanoMaduroCortado,
-    PlatanoMaduroCocinado
+    //comidas Hechas
+    Hamburguesa,
+    EnsaladaTomateLechuga,
 }

@@ -75,7 +75,7 @@ public class GrillSlotUIItem : MonoBehaviour
     {
         if (ingredientNameText != null)
         {
-            ingredientNameText.text = GetDisplayName(ingredient);
+            ingredientNameText.text =IngredientDisplayName.Get(ingredient);
         }
 
         if (statusText != null)
@@ -100,7 +100,7 @@ public class GrillSlotUIItem : MonoBehaviour
     {
         if (ingredientNameText != null)
         {
-            ingredientNameText.text = GetDisplayName(cookedIngredient);
+            ingredientNameText.text = IngredientDisplayName.Get(cookedIngredient);
         }
 
         if (statusText != null)
@@ -125,12 +125,6 @@ public class GrillSlotUIItem : MonoBehaviour
     {
         onCollectPressed?.Invoke(slotIndex);
     }
-
-    private string GetDisplayName(Ingredientes value)
-    {
-        return value.ToString().Replace("_", " ");
-    }
-
     private void ValidateReferences()
     {
         if (slotNameText == null)

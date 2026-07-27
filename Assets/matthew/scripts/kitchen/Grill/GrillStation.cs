@@ -171,11 +171,6 @@ public class GrillStation : MonoBehaviour, IInteractable
                     Ingredientes.PlatanoVerdeCocinado;
                 return true;
 
-            case Ingredientes.PlatanoMaduroCortado:
-                cookedIngredient =
-                    Ingredientes.PlatanoMaduroCocinado;
-                return true;
-
             default:
                 return false;
         }

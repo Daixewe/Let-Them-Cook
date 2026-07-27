@@ -95,12 +95,6 @@ public class CookingStation : MonoBehaviour, IInteractable
             return;
         }
 
-        // Plátano maduro cortado -> plátano maduro cocinado.
-        if (TryUseIngredient(Ingredientes.PlatanoMaduroCortado,Ingredientes.PlatanoMaduroCocinado))
-        {
-            return;
-        }
-
         Debug.Log("No tienes ningún ingrediente que pueda cocinarse.");
     }
 
