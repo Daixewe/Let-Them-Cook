@@ -95,43 +95,30 @@ public class Inventory : MonoBehaviour
     /// Devuelve true si pudo consumirlo.
     /// Devuelve false si no existe o no hay suficiente cantidad.
 
-    public bool IntentarUsarIngrediente(
-    Ingredientes nombre,
-    int cantidadNecesaria)
+    public bool IntentarUsarIngrediente(Ingredientes nombre,int cantidadNecesaria)
     {
         if (cantidadNecesaria <= 0)
         {
-            Debug.LogWarning(
-                "La cantidad necesaria debe ser mayor que cero."
-            );
+            Debug.LogWarning("La cantidad necesaria debe ser mayor que cero.");
 
             return false;
         }
 
-        if (!listaIngredientes.TryGetValue(
-                nombre,
-                out int cantidadActual))
+        if (!listaIngredientes.TryGetValue(nombre,out int cantidadActual))
         {
-            Debug.LogWarning(
-                $"No tienes {nombre}."
-            );
+            Debug.LogWarning($"No tienes {nombre}.");
 
             return false;
         }
 
         if (cantidadActual < cantidadNecesaria)
         {
-            Debug.LogWarning(
-                $"No tienes suficiente {nombre}. " +
-                $"Necesitas {cantidadNecesaria} y " +
-                $"tienes {cantidadActual}."
-            );
+            Debug.LogWarning($"No tienes suficiente {nombre}. " +$"Necesitas {cantidadNecesaria} y " + $"tienes {cantidadActual}.");
 
             return false;
         }
 
-        int cantidadRestante =
-            cantidadActual - cantidadNecesaria;
+        int cantidadRestante =cantidadActual - cantidadNecesaria;
 
         if (cantidadRestante <= 0)
         {
@@ -140,14 +127,10 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            listaIngredientes[nombre] =
-                cantidadRestante;
+            listaIngredientes[nombre] =cantidadRestante;
         }
 
-        Debug.Log(
-            $"Usaste {cantidadNecesaria} de {nombre}. " +
-            $"Quedan: {cantidadRestante}"
-        );
+        Debug.Log($"Usaste {cantidadNecesaria} de {nombre}. " +$"Quedan: {cantidadRestante}");
 
         OnInventoryChanged?.Invoke();
 
@@ -189,6 +172,7 @@ public enum Ingredientes
     Pan,
     huevo,
     huevoCocinado,
+    
 
     // Semillas para el sistema de cultivo.
     SemillaTomate,

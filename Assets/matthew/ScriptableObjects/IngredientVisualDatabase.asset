@@ -53,3 +53,38 @@ MonoBehaviour:
     localPosition: {x: 0, y: 0, z: 0}
     localRotation: {x: 0, y: 0, z: 0}
     localScale: {x: 0.2, y: 0.2, z: 0.2}
+  - ingredient: 10
+    visualPrefab: {fileID: 919132149155446097, guid: 3aa7d5fa50409204e90b00203f8c9855, type: 3}
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 1, y: 1, z: 1}
+  - ingredient: 11
+    visualPrefab: {fileID: 4363241196587671831, guid: 5a13447a7da133c4fa98b14c804abf91, type: 3}
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.2, y: 0.2, z: 0.2}
+  - ingredient: 8
+    visualPrefab: {fileID: 3369557138278493154, guid: 6825c05e6229a8d4496869a918acbecd, type: 3}
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.1, y: 0.1, z: 0.1}
+  - ingredient: 4
+    visualPrefab: {fileID: 7793252701041325427, guid: cb503c563a1045e46881cdf776976a07, type: 3}
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.1, y: 0.1, z: 0.1}
+  - ingredient: 3
+    visualPrefab: {fileID: 919132149155446097, guid: 036455e1217523c49ac17adce37d972c, type: 3}
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.7, y: 0.7, z: 0.7}
+  - ingredient: 17
+    visualPrefab: {fileID: 919132149155446097, guid: e759c319daad05645a1868536ef7bfa4, type: 3}
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 4, y: 4, z: 4}
+  - ingredient: 9
+    visualPrefab: {fileID: 5569612086867529233, guid: 68aca23de7f87be429d806227bcec685, type: 3}
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+    localScale: {x: 0.5, y: 0.5, z: 0.5}

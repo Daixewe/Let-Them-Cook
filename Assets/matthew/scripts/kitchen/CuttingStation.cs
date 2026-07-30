@@ -90,6 +90,10 @@ public class CuttingStation : MonoBehaviour, IInteractable
         {
             return;
         }
+        if (TryUseIngredient(Ingredientes.PapasCrudas, Ingredientes.PapasCortadas))
+        {
+            return;
+        }
 
         Debug.Log("No tienes ningún ingrediente que pueda cortarse.");
     }

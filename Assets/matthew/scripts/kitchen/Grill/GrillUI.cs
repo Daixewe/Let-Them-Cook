@@ -172,6 +172,8 @@ public class GrillUI : MonoBehaviour
             Ingredientes ingredient = pair.Key;
             int quantity = pair.Value;
 
+            
+
             if (quantity <= 0)
             {
                 continue;
