@@ -13,9 +13,26 @@ public class NPCSpawner : MonoBehaviour
 
     public void SpawnNPC()
     {
-        GameObject npcObject = Instantiate( npcPrefab,spawnPoint.position, spawnPoint.rotation );
+        if (npcPrefab == null ||spawnPoint == null ||waitingPoint == null)
+        {
+            Debug.LogError("Faltan referencias en NPCSpawner.");
 
-        NPC npc = npcObject.GetComponent<NPC>();
+            return;
+        }
+
+        GameObject npcObject =
+            Instantiate(npcPrefab,spawnPoint.position,spawnPoint.rotation);
+
+        NPC npc =npcObject.GetComponent<NPC>();
+
+        if (npc == null)
+        {
+            Debug.LogError("El prefab no tiene el componente NPC.");
+
+            Destroy(npcObject);
+            return;
+        }
+
         npc.SetTarget(waitingPoint);
     }
 }

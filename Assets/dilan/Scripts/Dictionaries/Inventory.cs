@@ -4,84 +4,88 @@ using System;
 
 public class Inventory : MonoBehaviour
 {
-
-    // Diccionario donde se almacena cada ingrediente y su cantidad.
     private Dictionary<Ingredientes, int> listaIngredientes = new();
 
-    // Evento que se ejecuta cada vez que cambia el inventario.
-    // La interfaz se suscribirá a este evento para actualizarse.
     public event Action OnInventoryChanged;
 
+    [Header("Capacidad")]
+    [SerializeField] private int maxSlots = 15;
 
-    
+    public int MaxSlots => maxSlots;
 
-    public void AñadirIngrediente(Ingredientes nombre, int cantidad)
+    public int CurrentItemCount => GetCurrentItemCount();
+
+    public int FreeSpace => Mathf.Max( 0,maxSlots - GetCurrentItemCount());
+
+    public bool AñadirIngrediente(Ingredientes nombre,int cantidad)
     {
-        // Evitamos agregar cantidades inválidas.
         if (cantidad <= 0)
         {
             Debug.LogWarning("La cantidad debe ser mayor que cero.");
-            return;
+
+            return false;
+        }
+
+        if (!HasSpace(cantidad))
+        {
+            Debug.LogWarning($"Inventario lleno. Espacio disponible: {FreeSpace}.");
+
+            return false;
         }
 
         if (listaIngredientes.ContainsKey(nombre))
         {
-            // Si ya existe, sumamos la cantidad.
             listaIngredientes[nombre] += cantidad;
         }
         else
         {
-            // Si no existe, lo creamos.
             listaIngredientes.Add(nombre, cantidad);
         }
 
         Debug.Log($"Añadido: {cantidad} de {nombre}. " +$"Total: {listaIngredientes[nombre]}");
 
-        // Avisamos a la interfaz que el inventario cambió.
         OnInventoryChanged?.Invoke();
+
+        return true;
     }
 
     public bool TieneIngredientesEspecificos(Ingredientes ingredienteA,Ingredientes ingredienteB)
     {
-        // 1. Verificar el primer ingrediente.
         bool tieneA =listaIngredientes.ContainsKey(ingredienteA) &&listaIngredientes[ingredienteA] > 0;
 
-        // 2. Verificar el segundo ingrediente.
         bool tieneB =listaIngredientes.ContainsKey(ingredienteB) &&listaIngredientes[ingredienteB] > 0;
 
-        // Devuelve true solo si ambos son verdaderos.
         return tieneA && tieneB;
     }
 
     public int ObtenerCantidad(Ingredientes nombre)
     {
-        // Intentamos obtener la cantidad del ingrediente.
-        if (listaIngredientes.TryGetValue(nombre, out int cantidad))
+        if (listaIngredientes.TryGetValue(nombre,out int cantidad))
         {
             return cantidad;
         }
 
-        // Si no existe todavía, devolvemos cero.
         return 0;
     }
 
     public void UsarIngrediente(Ingredientes nombre,int cantidadNecesaria)
     {
-        // Verificar si el ingrediente existe en el diccionario.
         if (listaIngredientes.ContainsKey(nombre))
         {
             if (listaIngredientes[nombre] >= cantidadNecesaria)
             {
                 listaIngredientes[nombre] -= cantidadNecesaria;
 
-                Debug.Log($"Usaste {cantidadNecesaria} de {nombre}. " +$"Quedan: {listaIngredientes[nombre]}");
+                if (listaIngredientes[nombre] <= 0)
+                {
+                    listaIngredientes.Remove(nombre);
+                }
 
-                // Avisamos a la interfaz que el inventario cambió.
                 OnInventoryChanged?.Invoke();
             }
             else
             {
-                Debug.LogWarning($"No tienes suficiente {nombre}. " +$"Necesitas {cantidadNecesaria}, " +$"solo tienes {listaIngredientes[nombre]}");
+                Debug.LogWarning( $"No tienes suficiente {nombre}.");
             }
         }
         else
@@ -90,30 +94,25 @@ public class Inventory : MonoBehaviour
         }
     }
 
-
-    /// Intenta consumir una cantidad de un ingrediente.
-    /// Devuelve true si pudo consumirlo.
-    /// Devuelve false si no existe o no hay suficiente cantidad.
-
     public bool IntentarUsarIngrediente(Ingredientes nombre,int cantidadNecesaria)
     {
         if (cantidadNecesaria <= 0)
         {
-            Debug.LogWarning("La cantidad necesaria debe ser mayor que cero.");
+            Debug.LogWarning("La cantidad necesaria debe ser mayor que cero." );
 
             return false;
         }
 
         if (!listaIngredientes.TryGetValue(nombre,out int cantidadActual))
         {
-            Debug.LogWarning($"No tienes {nombre}.");
+            Debug.LogWarning( $"No tienes {nombre}.");
 
             return false;
         }
 
         if (cantidadActual < cantidadNecesaria)
         {
-            Debug.LogWarning($"No tienes suficiente {nombre}. " +$"Necesitas {cantidadNecesaria} y " + $"tienes {cantidadActual}.");
+            Debug.LogWarning($"No tienes suficiente {nombre}. " +$"Necesitas {cantidadNecesaria} y " +$"tienes {cantidadActual}.");
 
             return false;
         }
@@ -123,14 +122,11 @@ public class Inventory : MonoBehaviour
         if (cantidadRestante <= 0)
         {
             listaIngredientes.Remove(nombre);
-            cantidadRestante = 0;
         }
         else
         {
             listaIngredientes[nombre] =cantidadRestante;
         }
-
-        Debug.Log($"Usaste {cantidadNecesaria} de {nombre}. " +$"Quedan: {cantidadRestante}");
 
         OnInventoryChanged?.Invoke();
 
@@ -139,17 +135,35 @@ public class Inventory : MonoBehaviour
 
     public void ConsumirIngredientes(Ingredientes ingredienteA,Ingredientes ingredienteB)
     {
-        if (TieneIngredientesEspecificos(ingredienteA,ingredienteB))
+        if (!TieneIngredientesEspecificos(ingredienteA,ingredienteB))
         {
-            // Restamos una unidad de cada ingrediente.
-            listaIngredientes[ingredienteA]--;
-            listaIngredientes[ingredienteB]--;
-
-            Debug.Log($"Se consumió 1 de {ingredienteA} " + $"y 1 de {ingredienteB}.");
-
-            // Avisamos a la interfaz que el inventario cambió.
-            OnInventoryChanged?.Invoke();
+            return;
         }
+
+        IntentarUsarIngrediente(ingredienteA, 1);
+        IntentarUsarIngrediente(ingredienteB, 1);
+    }
+
+    public int GetCurrentItemCount()
+    {
+        int total = 0;
+
+        foreach (KeyValuePair<Ingredientes, int> item in listaIngredientes)
+        {
+            total += item.Value;
+        }
+
+        return total;
+    }
+
+    public bool HasSpace(int amount = 1)
+    {
+        if (amount <= 0)
+        {
+            return false;
+        }
+
+        return GetCurrentItemCount() + amount <=maxSlots;
     }
 
     public Dictionary<Ingredientes, int> GetIngredients()
@@ -172,19 +186,15 @@ public enum Ingredientes
     Pan,
     huevo,
     huevoCocinado,
-    
 
-    // Semillas para el sistema de cultivo.
     SemillaTomate,
     SemillaLechuga,
     SemillaPapa,
 
-    // Plátano verde.
     PlatanoVerdeSinCortar,
     PlatanoVerdeCortado,
     PlatanoVerdeCocinado,
 
-    //comidas Hechas
     Hamburguesa,
-    EnsaladaTomateLechuga,
+    EnsaladaTomateLechuga
 }
