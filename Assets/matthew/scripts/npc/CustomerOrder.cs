@@ -17,7 +17,7 @@ public class CustomerOrder : MonoBehaviour, IInteractable
             npc = GetComponent<NPC>();
         }
 
-        orderManager = FindFirstObjectByType<OrderManager>();
+        orderManager =FindFirstObjectByType<OrderManager>();
 
         if (orderManager == null)
         {
@@ -25,9 +25,24 @@ public class CustomerOrder : MonoBehaviour, IInteractable
         }
     }
 
+    private void OnEnable()
+    {
+        if (orderManager != null)
+        {
+            orderManager.OnOrderCompleted +=HandleOrderCompleted;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (orderManager != null)
+        {
+            orderManager.OnOrderCompleted -=HandleOrderCompleted;
+        }
+    }
+
     public void Interact()
     {
-        Debug.Log("Interactuaste con el cliente.");
         if (!hasReachedRegister)
         {
             Debug.LogWarning("El cliente todavía no ha llegado a la caja.");
@@ -37,8 +52,6 @@ public class CustomerOrder : MonoBehaviour, IInteractable
 
         if (hasRequestedOrder)
         {
-            Debug.LogWarning("Este cliente ya realizó su pedido.");
-
             return;
         }
 
@@ -65,12 +78,9 @@ public class CustomerOrder : MonoBehaviour, IInteractable
 
         hasRequestedOrder = true;
 
-        if (npc != null &&
-    orderManager.CurrentOrder != null)
+        if (npc != null &&orderManager.CurrentOrder != null)
         {
-            npc.StartPatience(
-                orderManager.CurrentOrder.PatienceTime
-            );
+            npc.StartPatience(orderManager.CurrentOrder.PatienceTime);
         }
     }
 
@@ -79,9 +89,23 @@ public class CustomerOrder : MonoBehaviour, IInteractable
         hasReachedRegister = true;
     }
 
+    private void HandleOrderCompleted(OrderData completedOrder)
+    {
+        if (!hasRequestedOrder)
+        {
+            return;
+        }
+
+        if (npc != null)
+        {
+            npc.StopPatience();
+            npc.StartLeaving();
+        }
+    }
+
     public void HandleCustomerPatienceExpired()
     {
-        if (orderManager != null &&orderManager.HasActiveOrder)
+        if (orderManager != null && orderManager.HasActiveOrder)
         {
             orderManager.FailCurrentOrderFromCustomer();
         }
