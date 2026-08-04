@@ -5,9 +5,10 @@ using UnityEngine;
 public class OrderManager : MonoBehaviour
 {
     [Header("Pedidos disponibles")]
-    [SerializeField]
-    private List<OrderData> availableOrders = new();
+    [SerializeField] private List<OrderData> availableOrders = new();
 
+    [Header ("Dinero")]
+    [SerializeField] private MoneyManager moneyManager;
 
     private OrderData currentOrder;
     private float remainingTime;
@@ -165,8 +166,7 @@ public class OrderManager : MonoBehaviour
 
     public void FailCurrentOrderFromCustomer()
     {
-        if (!hasActiveOrder ||
-            currentOrder == null)
+        if (!hasActiveOrder ||currentOrder == null)
         {
             return;
         }
@@ -176,12 +176,25 @@ public class OrderManager : MonoBehaviour
 
     private void CompleteCurrentOrder()
     {
-        OrderData completedOrder =currentOrder;
+        OrderData completedOrder = currentOrder;
+
+        Debug.Log($"Pedido completado: {completedOrder.OrderName}");
+        Debug.Log($"Recompensa: {completedOrder.Reward}");
+
+        if (moneyManager != null)
+        {
+            moneyManager.AddMoney(completedOrder.Reward);
+            Debug.Log("Dinero agregado.");
+        }
+        else
+        {
+            Debug.LogError("Falta asignar MoneyManager en OrderManager.");
+            Debug.LogError("MoneyManager es NULL.");
+        }
 
         ClearCurrentOrder();
 
         OnOrderCompleted?.Invoke(completedOrder);
-
         OnOrderChanged?.Invoke();
     }
 
