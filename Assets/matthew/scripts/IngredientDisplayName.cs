@@ -7,20 +7,23 @@ public static class IngredientDisplayName
         switch (ingredient)
         {
             case Ingredientes.CarneCruda:
-                return "Carne";
+                return "Carne cruda";
 
             case Ingredientes.TomateSinCortar:
-            case Ingredientes.TomateCortado:
                 return "Tomate";
+            case Ingredientes.TomateCortado:
+                return"Rodaja Tomate";
 
             case Ingredientes.LechugaSinCortar:
-            case Ingredientes.LechugaCortada:
                 return "Lechuga";
+            case Ingredientes.LechugaCortada:
+                return"Gajo lechuga";
 
             case Ingredientes.PapasCrudas:
             case Ingredientes.PapasCortadas:
-            case Ingredientes.PapasCocinadas:
                 return "Papas";
+            case Ingredientes.PapasCocinadas:
+                return "Papas fritas";
 
             case Ingredientes.SemillaTomate:
                 return "Semillas de tomate";
@@ -33,14 +36,15 @@ public static class IngredientDisplayName
 
             case Ingredientes.PlatanoVerdeSinCortar:
             case Ingredientes.PlatanoVerdeCortado:
+              return "Plátano verde";
             case Ingredientes.PlatanoVerdeCocinado:
-                return "Plátano verde";
+                return "Patacon";
 
             case Ingredientes.huevo:
                 return "Huevo";
 
             case Ingredientes.huevoCocinado:
-                return "Huevo cocinado";
+                return "Huevo frito";
 
             case Ingredientes.EnsaladaTomateLechuga:
                 return "Ensalada";
