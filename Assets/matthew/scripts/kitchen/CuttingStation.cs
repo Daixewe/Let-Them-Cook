@@ -14,7 +14,7 @@ public class CuttingStation : MonoBehaviour, IInteractable
     [Header("Configuración del corte")]
     [SerializeField] private float cuttingTime = 2f;
 
-    
+
 
     // Ingrediente colocado actualmente sobre la tabla.
     private Ingredientes currentIngredient;
@@ -31,9 +31,9 @@ public class CuttingStation : MonoBehaviour, IInteractable
     // Evita interactuar varias veces mientras se está cortando.
     private bool isCutting;
 
-    
+
     // Se ejecuta cuando el jugador interactúa con la tabla.
-   
+
     public void Interact()
     {
         // Verificamos que las referencias necesarias estén asignadas.
@@ -68,25 +68,44 @@ public class CuttingStation : MonoBehaviour, IInteractable
         }
     }
 
-    
+    public string GetInteractionText()
+    {
+        if (!hasIngredient)
+        {
+            return "Colocar ingrediente";
+        }
+
+        if (ingredientIsCut)
+        {
+            return "Recoger ingrediente";
+        }
+
+        if (isCutting)
+        {
+            return "Cortando...";
+        }
+
+        return "Cortar ingrediente";
+    }
+
     // Intenta encontrar y consumir un ingrediente que pueda cortarse.
-    
+
     private void TryPlaceIngredient()
     {
         // Se prueban los ingredientes en este orden.
         // El primero disponible será colocado sobre la tabla.
 
-        if (TryUseIngredient(Ingredientes.TomateSinCortar,Ingredientes.TomateCortado))
+        if (TryUseIngredient(Ingredientes.TomateSinCortar, Ingredientes.TomateCortado))
         {
             return;
         }
 
-        if (TryUseIngredient(Ingredientes.LechugaSinCortar,Ingredientes.LechugaCortada))
+        if (TryUseIngredient(Ingredientes.LechugaSinCortar, Ingredientes.LechugaCortada))
         {
             return;
         }
 
-        if (TryUseIngredient(Ingredientes.PlatanoVerdeSinCortar,Ingredientes.PlatanoVerdeCortado))
+        if (TryUseIngredient(Ingredientes.PlatanoVerdeSinCortar, Ingredientes.PlatanoVerdeCortado))
         {
             return;
         }
@@ -98,17 +117,17 @@ public class CuttingStation : MonoBehaviour, IInteractable
         Debug.Log("No tienes ningún ingrediente que pueda cortarse.");
     }
 
-    
+
     // Comprueba si el jugador tiene el ingrediente indicado.
     // Si lo tiene, lo consume y muestra su representación visual.
-    
+
     private bool TryUseIngredient(
         Ingredientes originalIngredient,
         Ingredientes cutResult)
     {
         // Usa el método auxiliar que agregamos al inventario.
         bool ingredientUsed =
-            playerInventory.IntentarUsarIngrediente(originalIngredient,1);
+            playerInventory.IntentarUsarIngrediente(originalIngredient, 1);
 
         if (!ingredientUsed)
         {
@@ -120,15 +139,18 @@ public class CuttingStation : MonoBehaviour, IInteractable
         resultingIngredient = cutResult;
 
         // Intentamos mostrar el ingrediente sobre la tabla.
-        bool visualShown =ingredientVisual.ShowIngredient(currentIngredient);
+        bool visualShown = ingredientVisual.ShowIngredient(currentIngredient);
 
         // Si el visual no pudo crearse, devolvemos el ingrediente
         // para evitar que el jugador lo pierda.
         if (!visualShown)
         {
-            playerInventory.AñadirIngrediente(originalIngredient,1);
+            playerInventory.AñadirIngrediente(originalIngredient, 1);
 
-            Debug.LogError($"No se pudo mostrar el visual de " +$"{originalIngredient}.");
+            currentIngredient = default;
+            resultingIngredient = default;
+
+            Debug.LogError($"No se pudo mostrar el visual de {originalIngredient}.");
 
             return false;
         }
@@ -141,26 +163,26 @@ public class CuttingStation : MonoBehaviour, IInteractable
         return true;
     }
 
-    
+
     // Simula el tiempo necesario para cortar el ingrediente.
-    
+
     private IEnumerator CutIngredient(KnifeTool knifeTool)
     {
         isCutting = true;
 
         Debug.Log($"Comenzando a cortar {currentIngredient}.");
 
-        
+
         // reproducimos la animación del cuchillo.
         yield return StartCoroutine(knifeTool.PlayCutAnimation());
 
         yield return new WaitForSeconds(Mathf.Max(0f, cuttingTime - 0.5f));
 
-        bool resultVisualShown =ingredientVisual.ShowIngredient(resultingIngredient);
+        bool resultVisualShown = ingredientVisual.ShowIngredient(resultingIngredient);
 
         if (!resultVisualShown)
         {
-            Debug.LogError($"No existe un visual configurado para " +$"{resultingIngredient}.");
+            Debug.LogError($"No existe un visual configurado para " + $"{resultingIngredient}.");
 
             isCutting = false;
             yield break;
@@ -169,27 +191,42 @@ public class CuttingStation : MonoBehaviour, IInteractable
         ingredientIsCut = true;
         isCutting = false;
 
-        Debug.Log($"{currentIngredient} fue convertido en " +$"{resultingIngredient}.");
+        Debug.Log($"{currentIngredient} fue convertido en " + $"{resultingIngredient}.");
     }
 
-    
+
     // Retira el resultado de la tabla y lo agrega al inventario.
-    
+
     private void CollectResult()
     {
-        playerInventory.AñadirIngrediente(resultingIngredient,1);
+        if (!playerInventory.HasSpace(1))
+        {
+            Debug.LogWarning("El inventario está lleno. No puedes recoger el ingrediente.");
 
-        // Eliminamos solamente el objeto visual.
+            NotificationUI.Instance?.ShowMessage("Inventario lleno. No puedes recoger el ingrediente.");
+
+            return;
+        }
+
+        bool added = playerInventory.AñadirIngrediente(resultingIngredient, 1);
+
+        if (!added)
+        {
+            Debug.LogWarning("No se pudo agregar el ingrediente al inventario.");
+
+            return;
+        }
+
         ingredientVisual.ClearVisual();
 
-        Debug.Log($"Recogiste {resultingIngredient} de la tabla.");
+        Debug.Log($"Recogiste " + $"{IngredientDisplayName.Get(resultingIngredient)} " + $"de la tabla.");
 
         ResetStation();
     }
 
-    
+
     // Restablece el estado interno para que la tabla pueda reutilizarse.
-    
+
     private void ResetStation()
     {
         hasIngredient = false;
@@ -200,9 +237,9 @@ public class CuttingStation : MonoBehaviour, IInteractable
         resultingIngredient = default;
     }
 
-   
+
     // Comprueba las referencias configuradas desde el Inspector.
-  
+
     private bool ValidateReferences()
     {
         if (playerInventory == null)
@@ -214,7 +251,7 @@ public class CuttingStation : MonoBehaviour, IInteractable
 
         if (ingredientVisual == null)
         {
-            Debug.LogError("Falta asignar StationIngredientVisual " +"en CuttingStation.");
+            Debug.LogError("Falta asignar StationIngredientVisual " + "en CuttingStation.");
 
             return false;
         }
@@ -228,8 +265,7 @@ public class CuttingStation : MonoBehaviour, IInteractable
         return true;
     }
 
-    private bool TryGetHeldKnife(
-    out KnifeTool knifeTool)
+    private bool TryGetHeldKnife(out KnifeTool knifeTool)
     {
         knifeTool = null;
 
@@ -240,39 +276,37 @@ public class CuttingStation : MonoBehaviour, IInteractable
             return false;
         }
 
-        // Comprobamos si el jugador tiene algún objeto.
+        // No sostiene ningún objeto.
         if (!playerPickup.HasItem())
         {
-            Debug.Log("Necesitas sostener un cuchillo para cortar." );
+            NotificationUI.Instance?.ShowMessage("Necesitas sostener un cuchillo para cortar.");
 
             return false;
         }
 
-        PickupItem heldItem =
-            playerPickup.GetHeldItem();
+        PickupItem heldItem =playerPickup.GetHeldItem();
 
         if (heldItem == null)
         {
-            Debug.Log("No se encontró el objeto sostenido.");
+            NotificationUI.Instance?.ShowMessage("No tienes ningún objeto en la mano.");
 
             return false;
         }
 
-        ToolItem toolItem =
-            heldItem.GetComponent<ToolItem>();
+        ToolItem toolItem =heldItem.GetComponent<ToolItem>();
 
-        // El objeto sostenido debe ser una herramienta.
+        // Tiene algo en la mano, pero no es una herramienta.
         if (toolItem == null)
         {
-            Debug.Log("El objeto que sostienes no es una herramienta.");
+            NotificationUI.Instance?.ShowMessage("Necesitas un cuchillo para cortar.");
 
             return false;
         }
 
-        // La herramienta debe ser específicamente un cuchillo.
+        // Es herramienta, pero no es un cuchillo.
         if (!toolItem.IsTool(ToolItem.ToolType.Knife))
         {
-            Debug.Log("Necesitas un cuchillo para cortar.");
+            NotificationUI.Instance?.ShowMessage("Necesitas un cuchillo para cortar.");
 
             return false;
         }
@@ -282,6 +316,8 @@ public class CuttingStation : MonoBehaviour, IInteractable
         if (knifeTool == null)
         {
             Debug.LogError("El cuchillo no tiene el componente KnifeTool.");
+
+            NotificationUI.Instance?.ShowMessage("El cuchillo no está configurado correctamente.");
 
             return false;
         }

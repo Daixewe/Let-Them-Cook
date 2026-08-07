@@ -21,4 +21,9 @@ public class IngredientPickupStation : MonoBehaviour, IInteractable
 
         Debug.Log($"Se obtuvo {amount} x {IngredientDisplayName.Get(ingredient)}");
     }
+
+    public string GetInteractionText()
+    {
+        return "Recoger";
+    }
 }

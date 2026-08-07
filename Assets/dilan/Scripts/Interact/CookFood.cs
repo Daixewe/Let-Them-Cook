@@ -19,6 +19,10 @@ public class CookFood : MonoBehaviour, IInteractable
         ComprobarRequisito();
 
     }
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
 
     void ComprobarRequisito()
     {

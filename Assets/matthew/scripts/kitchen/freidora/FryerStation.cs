@@ -24,6 +24,11 @@ public class FryerStation : MonoBehaviour, IInteractable
         fryerUI.Open(this, playerInventory);
     }
 
+    public string GetInteractionText()
+    {
+        return "Usar freidora";
+    }
+
     public bool CanCookIngredient(Ingredientes ingredient)
     {
         return TryGetCookedIngredient(ingredient,out _);
@@ -88,11 +93,17 @@ public class FryerStation : MonoBehaviour, IInteractable
             return false;
         }
 
-        GrillCookingSlot slot =
-            cookingSlots[slotIndex];
+        GrillCookingSlot slot =cookingSlots[slotIndex];
 
         if (slot == null)
         {
+            return false;
+        }
+
+        if (!playerInventory.HasSpace(1))
+        {
+            NotificationUI.Instance?.ShowMessage("Inventario lleno. No puedes recoger la comida.");
+
             return false;
         }
 

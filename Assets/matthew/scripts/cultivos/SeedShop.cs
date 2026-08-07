@@ -41,6 +41,11 @@ public class SeedShop : MonoBehaviour, IInteractable
         BuySeed();
     }
 
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
+
     private void BuySeed()
     {
         // Evitamos configuraciones incorrectas.

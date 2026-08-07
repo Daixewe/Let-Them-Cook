@@ -80,6 +80,21 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
         OpenStorage();
     }
 
+    public string GetInteractionText()
+    {
+        if (fridgeUI != null && fridgeUI.IsOpen)
+        {
+            return "Usando refrigeradora";
+        }
+
+        if (!isOpen)
+        {
+            return "Abrir refrigeradora";
+        }
+
+        return "Usar refrigeradora";
+    }
+
     private void OpenFridge()
     {
         isOpen = true;

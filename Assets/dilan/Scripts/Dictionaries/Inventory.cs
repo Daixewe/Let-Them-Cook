@@ -30,6 +30,8 @@ public class Inventory : MonoBehaviour
         {
             Debug.LogWarning($"Inventario lleno. Espacio disponible: {FreeSpace}.");
 
+            NotificationUI.Instance?.ShowMessage("Inventario lleno.");
+
             return false;
         }
 

@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RecipeButtonPrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 8231225868349030228, guid: 3660c5aa08f6f90439956e59470bb968, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 9220912532904645182, guid: 3660c5aa08f6f90439956e59470bb968, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -13,23 +13,35 @@ public class DeliveryCounter : MonoBehaviour, IInteractable
             return;
         }
 
-        if (!orderManager.HasActiveOrder)
+        // No existe ningún pedido activo.
+        if (!orderManager.HasActiveOrder ||orderManager.CurrentOrder == null)
         {
-            Debug.LogWarning("No hay ningún pedido activo para entregar.");
+            NotificationUI.Instance?.ShowMessage("No hay ningún pedido activo.");
 
             return;
         }
 
+        // Intentamos completar el pedido.
         bool completed =orderManager.TryCompleteCurrentOrder(playerInventory);
 
+        // El jugador no tiene la comida necesaria.
         if (!completed)
         {
-            Debug.LogWarning("No tienes el platillo solicitado en el inventario.");
+            NotificationUI.Instance?.ShowMessage("No tienes el platillo solicitado.");
 
             return;
         }
+    }
 
-        Debug.Log("Pedido entregado correctamente.");
+    public string GetInteractionText()
+    {
+        if (orderManager == null ||
+            !orderManager.HasActiveOrder)
+        {
+            return "No hay pedido activo";
+        }
+
+        return "Entregar pedido";
     }
 
     private bool ValidateReferences()

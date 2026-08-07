@@ -22,8 +22,7 @@ public class Interactor : MonoBehaviour
     {
         DetectInteractable();
 
-        if (currentInteractable != null &&
-            Input.GetMouseButtonDown(0))
+        if (currentInteractable != null && Input.GetMouseButtonDown(0))
         {
             currentInteractable.Interact();
         }
@@ -33,18 +32,11 @@ public class Interactor : MonoBehaviour
     {
         currentInteractable = null;
 
-        Ray ray = new Ray(
-            interactorSource.position,
-            interactorSource.forward
-        );
+        Ray ray = new Ray(interactorSource.position,interactorSource.forward);
 
-        if (Physics.Raycast(
-            ray,
-            out RaycastHit hit,
-            interactorRange))
+        if (Physics.Raycast(ray,out RaycastHit hit,interactorRange))
         {
-            currentInteractable =
-                hit.collider.GetComponentInParent<IInteractable>();
+            currentInteractable =hit.collider.GetComponentInParent<IInteractable>();
         }
 
         if (currentInteractable != null)
@@ -64,9 +56,9 @@ public class Interactor : MonoBehaviour
             interactionMessage.SetActive(true);
         }
 
-        if (interactionText != null)
+        if (interactionText != null && currentInteractable != null)
         {
-            interactionText.text = "Click para interactuar";
+            interactionText.text = currentInteractable.GetInteractionText();
         }
     }
 

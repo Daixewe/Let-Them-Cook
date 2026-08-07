@@ -21,7 +21,12 @@ public class GrillStation : MonoBehaviour, IInteractable
             return;
         }
 
-        grillUI.Open(this, playerInventory);
+        grillUI.Open(this,playerInventory);
+    }
+
+    public string GetInteractionText()
+    {
+        return "Usar plancha";
     }
 
     public bool CanCookIngredient(Ingredientes ingredient)
@@ -33,23 +38,23 @@ public class GrillStation : MonoBehaviour, IInteractable
     {
         if (playerInventory == null)
         {
-            Debug.LogError("Falta asignar Player Inventory " +"en GrillStation.");
+            Debug.LogError("Falta asignar Player Inventory en GrillStation.");
 
             return false;
         }
 
         if (!TryGetCookedIngredient(rawIngredient,out Ingredientes cookedIngredient))
         {
-            Debug.LogWarning($"{rawIngredient} no puede cocinarse " +"en la plancha.");
+            Debug.LogWarning($"{rawIngredient} no puede cocinarse en la plancha.");
 
             return false;
         }
 
-        GrillCookingSlot freeSlot = GetFreeSlot();
+        GrillCookingSlot freeSlot =GetFreeSlot();
 
         if (freeSlot == null)
         {
-            Debug.LogWarning("No hay espacios libres en la plancha.");
+            NotificationUI.Instance?.ShowMessage("No hay espacios libres en la plancha.");
 
             return false;
         }
@@ -61,11 +66,11 @@ public class GrillStation : MonoBehaviour, IInteractable
             return false;
         }
 
-        bool ingredientPlaced =freeSlot.PlaceIngredient(rawIngredient,cookedIngredient );
+        bool ingredientPlaced =freeSlot.PlaceIngredient(rawIngredient,cookedIngredient);
 
         if (!ingredientPlaced)
         {
-            playerInventory.AñadirIngrediente( rawIngredient,1);
+            playerInventory.AñadirIngrediente(rawIngredient,1);
 
             return false;
         }
@@ -82,38 +87,45 @@ public class GrillStation : MonoBehaviour, IInteractable
 
         if (slotIndex < 0 ||slotIndex >= cookingSlots.Length)
         {
-            Debug.LogError($"El índice {slotIndex} no existe " +"en los Cooking Slots.");
+            Debug.LogError($"El índice {slotIndex} no existe en los Cooking Slots.");
 
             return false;
         }
 
-        return TryCollectIngredient(
-            cookingSlots[slotIndex]
-        );
+        return TryCollectIngredient(cookingSlots[slotIndex]);
     }
 
-    public bool TryCollectIngredient(
-        GrillCookingSlot slot)
+    public bool TryCollectIngredient(GrillCookingSlot slot)
     {
         if (slot == null)
         {
             return false;
         }
 
-        bool collected =
-            slot.TryCollectIngredient(
-                out Ingredientes cookedIngredient
-            );
+        
+        // comprobamos el espacio antes de retirar la comida.
+        if (!playerInventory.HasSpace(1))
+        {
+            NotificationUI.Instance?.ShowMessage("Inventario lleno. No puedes recoger la comida.");
+
+            return false;
+        }
+
+        bool collected =slot.TryCollectIngredient(out Ingredientes cookedIngredient);
 
         if (!collected)
         {
             return false;
         }
 
-        playerInventory.AñadirIngrediente(
-            cookedIngredient,
-            1
-        );
+        bool added =playerInventory.AñadirIngrediente(cookedIngredient,1);
+
+        if (!added)
+        {
+            NotificationUI.Instance?.ShowMessage("No se pudo recoger la comida.");
+
+            return false;
+        }
 
         return true;
     }
@@ -153,12 +165,11 @@ public class GrillStation : MonoBehaviour, IInteractable
         switch (rawIngredient)
         {
             case Ingredientes.CarneCruda:
-                cookedIngredient = Ingredientes.Carne;
+                cookedIngredient =Ingredientes.Carne;
                 return true;
 
             case Ingredientes.huevo:
-                cookedIngredient =
-                    Ingredientes.huevoCocinado;
+                cookedIngredient =Ingredientes.huevoCocinado;
                 return true;
 
             default:
@@ -170,21 +181,21 @@ public class GrillStation : MonoBehaviour, IInteractable
     {
         if (playerInventory == null)
         {
-            Debug.LogError("Falta asignar Player Inventory " + "en GrillStation.");
+            Debug.LogError("Falta asignar Player Inventory en GrillStation.");
 
             return false;
         }
 
         if (grillUI == null)
         {
-            Debug.LogError("Falta asignar Grill UI " +"en GrillStation.");
+            Debug.LogError("Falta asignar Grill UI en GrillStation.");
 
             return false;
         }
 
         if (cookingSlots == null ||cookingSlots.Length == 0)
         {
-            Debug.LogError("No hay Cooking Slots asignados " +"en GrillStation.");
+            Debug.LogError("No hay Cooking Slots asignados en GrillStation.");
 
             return false;
         }

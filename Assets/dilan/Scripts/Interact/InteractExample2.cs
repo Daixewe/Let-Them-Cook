@@ -6,6 +6,9 @@ public class InteractExample2 : MonoBehaviour, IInteractable
     {
         
     }
-
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
 
 }

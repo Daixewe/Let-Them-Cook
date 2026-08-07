@@ -5,25 +5,23 @@ using UnityEngine;
 public class RecipeData : ScriptableObject
 {
     [Header("Información de la receta")]
-    [SerializeField]private string recipeName;
-
-    [SerializeField]private Sprite recipeIcon;
+    [SerializeField] private string recipeName;
+    [SerializeField] private Sprite recipeIcon;
 
     [Header("Ingredientes necesarios")]
     [SerializeField]private List<RecipeIngredient> requiredIngredients = new();
 
     [Header("Resultado")]
-    [SerializeField]private Ingredientes resultIngredient;
-
-    [SerializeField]private int resultQuantity = 1;
+    [SerializeField] private Ingredientes resultIngredient;
+    [SerializeField] private int resultQuantity = 1;
 
     public string RecipeName => recipeName;
-
     public Sprite RecipeIcon => recipeIcon;
 
-    public IReadOnlyList<RecipeIngredient> RequiredIngredients => requiredIngredients;
+    public IReadOnlyList<RecipeIngredient>
+        RequiredIngredients => requiredIngredients;
 
-    public Ingredientes ResultIngredient => resultIngredient;
+    public Ingredientes ResultIngredient =>resultIngredient;
 
-    public int ResultQuantity=> resultQuantity;
+    public int ResultQuantity =>resultQuantity;
 }

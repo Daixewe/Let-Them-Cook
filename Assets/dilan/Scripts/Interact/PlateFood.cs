@@ -12,6 +12,11 @@ public class PlateFood : MonoBehaviour, IInteractable
         TryToCook();
     }
 
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
+
     void TryToCook()
     {
         Ingredientes ing1 = ingredient1;

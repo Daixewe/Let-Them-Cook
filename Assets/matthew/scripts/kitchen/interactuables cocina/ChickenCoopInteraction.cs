@@ -55,6 +55,11 @@ public class ChickenCoop : MonoBehaviour, IInteractable
         CollectEgg();
     }
 
+    public string GetInteractionText()
+    {
+        return "Recoger";
+    }
+
     private void CollectEgg()
     {
         // Agregamos el huevo directamente al inventario.

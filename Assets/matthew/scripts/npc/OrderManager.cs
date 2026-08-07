@@ -7,7 +7,7 @@ public class OrderManager : MonoBehaviour
     [Header("Pedidos disponibles")]
     [SerializeField] private List<OrderData> availableOrders = new();
 
-    [Header ("Dinero")]
+    [Header("Dinero")]
     [SerializeField] private MoneyManager moneyManager;
 
     private OrderData currentOrder;
@@ -18,11 +18,9 @@ public class OrderManager : MonoBehaviour
     public event Action<OrderData> OnOrderCompleted;
     public event Action<OrderData> OnOrderFailed;
 
-    public bool HasActiveOrder =>hasActiveOrder;
-
-    public OrderData CurrentOrder =>currentOrder;
-
-    public float RemainingTime =>remainingTime;
+    public bool HasActiveOrder => hasActiveOrder;
+    public OrderData CurrentOrder => currentOrder;
+    public float RemainingTime => remainingTime;
 
     public float NormalizedRemainingTime
     {
@@ -108,9 +106,10 @@ public class OrderManager : MonoBehaviour
         }
 
         currentOrder = newOrder;
-        Debug.Log($"Nuevo pedido: {currentOrder.OrderName}");
         remainingTime = newOrder.PatienceTime;
         hasActiveOrder = true;
+
+        Debug.Log($"Nuevo pedido: {currentOrder.OrderName}");
 
         OnOrderChanged?.Invoke();
 
@@ -124,7 +123,7 @@ public class OrderManager : MonoBehaviour
             return false;
         }
 
-        return dish ==currentOrder.RequestedDish &&amount >=currentOrder.RequestedAmount;
+        return dish == currentOrder.RequestedDish && amount >= currentOrder.RequestedAmount;
     }
 
     public bool TryCompleteCurrentOrder(Inventory playerInventory)
@@ -166,7 +165,8 @@ public class OrderManager : MonoBehaviour
 
     public void FailCurrentOrderFromCustomer()
     {
-        if (!hasActiveOrder ||currentOrder == null)
+        if (!hasActiveOrder ||
+            currentOrder == null)
         {
             return;
         }
@@ -176,31 +176,35 @@ public class OrderManager : MonoBehaviour
 
     private void CompleteCurrentOrder()
     {
-        OrderData completedOrder = currentOrder;
+        OrderData completedOrder =currentOrder;
 
         Debug.Log($"Pedido completado: {completedOrder.OrderName}");
+
         Debug.Log($"Recompensa: {completedOrder.Reward}");
 
         if (moneyManager != null)
         {
             moneyManager.AddMoney(completedOrder.Reward);
-            Debug.Log("Dinero agregado.");
         }
         else
         {
             Debug.LogError("Falta asignar MoneyManager en OrderManager.");
-            Debug.LogError("MoneyManager es NULL.");
         }
+
+        NotificationUI.Instance?.ShowMessage($"Pedido completado: +₡{completedOrder.Reward}");
 
         ClearCurrentOrder();
 
         OnOrderCompleted?.Invoke(completedOrder);
+
         OnOrderChanged?.Invoke();
     }
 
     private void FailCurrentOrder()
     {
         OrderData failedOrder =currentOrder;
+
+        NotificationUI.Instance?.ShowMessage("Pedido fallido. El cliente perdió la paciencia.");
 
         ClearCurrentOrder();
 

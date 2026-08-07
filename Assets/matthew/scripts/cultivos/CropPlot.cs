@@ -45,6 +45,11 @@ public class CropPlot : MonoBehaviour, IInteractable
         }
     }
 
+    public string GetInteractionText()
+    {
+        return "Plantar";
+    }
+
     private void TryPlant()
     {
         if (playerInventory == null)

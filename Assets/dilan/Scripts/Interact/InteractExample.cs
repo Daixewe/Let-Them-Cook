@@ -6,7 +6,10 @@ public class InteractExample : MonoBehaviour, IInteractable
     {
         Debug.Log("Ejemplo 1, Bomba ");
     }
-    
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
 
-    
+
 }

@@ -84,6 +84,11 @@ public class CustomerOrder : MonoBehaviour, IInteractable
         }
     }
 
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
+
     public void SetReachedRegister()
     {
         hasReachedRegister = true;

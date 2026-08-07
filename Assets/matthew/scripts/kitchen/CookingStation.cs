@@ -72,7 +72,11 @@ public class CookingStation : MonoBehaviour, IInteractable
         StartCoroutine(CookIngredient());
     }
 
-    
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
+
     // Busca en el inventario algún ingrediente que pueda cocinarse.
     // El primer ingrediente disponible será colocado en la estación.   
     private void TryPlaceIngredient()

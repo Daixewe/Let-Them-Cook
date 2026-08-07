@@ -22,6 +22,10 @@ public class CostumerScript : MonoBehaviour, IInteractable
 
     }
 
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
     void ComprobarRequisito()
     {
         if (playerInventory == null)

@@ -28,4 +28,8 @@ public class PickIngredient : MonoBehaviour, IInteractable
 
         Destroy(gameObject);
     }
+    public string GetInteractionText()
+    {
+        return "Interactuar";
+    }
 }
