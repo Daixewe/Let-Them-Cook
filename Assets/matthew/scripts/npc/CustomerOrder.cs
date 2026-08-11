@@ -86,12 +86,26 @@ public class CustomerOrder : MonoBehaviour, IInteractable
 
     public string GetInteractionText()
     {
-        return "Interactuar";
+        if (!hasReachedRegister)
+        {
+            return "Cliente acercándose";
+        }
+
+        if (!hasRequestedOrder)
+        {
+            return "Tomar pedido";
+        }
+
+        return "Cliente esperando";
     }
 
     public void SetReachedRegister()
     {
         hasReachedRegister = true;
+
+        Debug.Log(
+            $"{gameObject.name}: ya llegó a la caja y puede tomar pedido."
+        );
     }
 
     private void HandleOrderCompleted(OrderData completedOrder)

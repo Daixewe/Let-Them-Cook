@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 9099105772515742290}
   - component: {fileID: 1759406619770033850}
   - component: {fileID: -1819168912852538257}
+  - component: {fileID: 763620713902534691}
   m_Layer: 0
   m_Name: NPCcapsule 1
   m_TagString: Untagged
@@ -156,9 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 515f6ebc4d2ef524bb3eb7afeccac689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NPC
-  targetPoint: {fileID: 0}
   moveSpeed: 2
-  patienceTime: 10
 --- !u!114 &-1819168912852538257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -171,5 +170,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b284afbff6f6f29419f3e0604ccbd00e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomerOrder
-  orderManager: {fileID: 0}
   npc: {fileID: 1759406619770033850}
+--- !u!195 &763620713902534691
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5050035261144158866}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.35
+  m_Speed: 2
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 360
+  m_StoppingDistance: 0.15
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.96
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4

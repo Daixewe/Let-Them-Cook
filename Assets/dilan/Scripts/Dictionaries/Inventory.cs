@@ -172,6 +172,50 @@ public class Inventory : MonoBehaviour
     {
         return new Dictionary<Ingredientes, int>(listaIngredientes);
     }
+
+    public bool RemoveFirstIngredient(out Ingredientes removedIngredient)
+    {
+        removedIngredient = default;
+
+        Ingredientes ingredientToRemove = default;
+        bool foundIngredient = false;
+
+        foreach (KeyValuePair<Ingredientes, int> item in listaIngredientes)
+        {
+            if (item.Value <= 0)
+            {
+                continue;
+            }
+
+            ingredientToRemove = item.Key;
+            foundIngredient = true;
+            break;
+        }
+
+        if (!foundIngredient)
+        {
+            return false;
+        }
+
+        int currentAmount =listaIngredientes[ingredientToRemove];
+
+        int newAmount =currentAmount - 1;
+
+        if (newAmount <= 0)
+        {
+            listaIngredientes.Remove(ingredientToRemove);
+        }
+        else
+        {
+            listaIngredientes[ingredientToRemove] =newAmount;
+        }
+
+        removedIngredient =ingredientToRemove;
+
+        OnInventoryChanged?.Invoke();
+
+        return true;
+    }
 }
 
 public enum Ingredientes
