@@ -10,6 +10,11 @@ public class OrderManager : MonoBehaviour
     [Header("Dinero")]
     [SerializeField] private MoneyManager moneyManager;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource orderAudioSource;
+    [SerializeField] private AudioClip orderCompletedSound;
+    [SerializeField] private AudioClip orderFailedSound;
+
     private OrderData currentOrder;
     private float remainingTime;
     private bool hasActiveOrder;
@@ -176,19 +181,16 @@ public class OrderManager : MonoBehaviour
 
     private void CompleteCurrentOrder()
     {
-        OrderData completedOrder =currentOrder;
-
-        Debug.Log($"Pedido completado: {completedOrder.OrderName}");
-
-        Debug.Log($"Recompensa: {completedOrder.Reward}");
+        OrderData completedOrder = currentOrder;
 
         if (moneyManager != null)
         {
             moneyManager.AddMoney(completedOrder.Reward);
         }
-        else
+
+        if (orderAudioSource != null &&orderCompletedSound != null)
         {
-            Debug.LogError("Falta asignar MoneyManager en OrderManager.");
+            orderAudioSource.PlayOneShot(orderCompletedSound);
         }
 
         NotificationUI.Instance?.ShowMessage($"Pedido completado: +₡{completedOrder.Reward}");
@@ -202,7 +204,12 @@ public class OrderManager : MonoBehaviour
 
     private void FailCurrentOrder()
     {
-        OrderData failedOrder =currentOrder;
+        OrderData failedOrder = currentOrder;
+
+        if (orderAudioSource != null && orderFailedSound != null)
+        {
+            orderAudioSource.PlayOneShot(orderFailedSound);
+        }
 
         NotificationUI.Instance?.ShowMessage("Pedido fallido. El cliente perdió la paciencia.");
 

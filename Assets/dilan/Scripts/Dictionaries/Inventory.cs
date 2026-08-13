@@ -11,11 +11,15 @@ public class Inventory : MonoBehaviour
     [Header("Capacidad")]
     [SerializeField] private int maxSlots = 15;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource inventoryAudioSource;
+    [SerializeField] private AudioClip pickupSound;
+
     public int MaxSlots => maxSlots;
 
-    public int CurrentItemCount => GetCurrentItemCount();
+    public int CurrentItemCount =>GetCurrentItemCount();
 
-    public int FreeSpace => Mathf.Max( 0,maxSlots - GetCurrentItemCount());
+    public int FreeSpace =>Mathf.Max(0,maxSlots - GetCurrentItemCount());
 
     public bool AñadirIngrediente(Ingredientes nombre,int cantidad)
     {
@@ -28,7 +32,7 @@ public class Inventory : MonoBehaviour
 
         if (!HasSpace(cantidad))
         {
-            Debug.LogWarning($"Inventario lleno. Espacio disponible: {FreeSpace}.");
+            Debug.LogWarning($"Inventario lleno. " +$"Espacio disponible: {FreeSpace}.");
 
             NotificationUI.Instance?.ShowMessage("Inventario lleno.");
 
@@ -41,10 +45,17 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            listaIngredientes.Add(nombre, cantidad);
+            listaIngredientes.Add(nombre,cantidad);
         }
 
         Debug.Log($"Añadido: {cantidad} de {nombre}. " +$"Total: {listaIngredientes[nombre]}");
+
+        // Sonido cuando algo entra correctamente
+        // al inventario.
+        if (inventoryAudioSource != null && pickupSound != null)
+        {
+            inventoryAudioSource.PlayOneShot(pickupSound);
+        }
 
         OnInventoryChanged?.Invoke();
 
@@ -53,9 +64,9 @@ public class Inventory : MonoBehaviour
 
     public bool TieneIngredientesEspecificos(Ingredientes ingredienteA,Ingredientes ingredienteB)
     {
-        bool tieneA =listaIngredientes.ContainsKey(ingredienteA) &&listaIngredientes[ingredienteA] > 0;
+        bool tieneA =listaIngredientes.ContainsKey(ingredienteA) && listaIngredientes[ingredienteA] > 0;
 
-        bool tieneB =listaIngredientes.ContainsKey(ingredienteB) &&listaIngredientes[ingredienteB] > 0;
+        bool tieneB =listaIngredientes.ContainsKey(ingredienteB) && listaIngredientes[ingredienteB] > 0;
 
         return tieneA && tieneB;
     }
@@ -74,9 +85,9 @@ public class Inventory : MonoBehaviour
     {
         if (listaIngredientes.ContainsKey(nombre))
         {
-            if (listaIngredientes[nombre] >= cantidadNecesaria)
+            if (listaIngredientes[nombre] >=cantidadNecesaria)
             {
-                listaIngredientes[nombre] -= cantidadNecesaria;
+                listaIngredientes[nombre] -=cantidadNecesaria;
 
                 if (listaIngredientes[nombre] <= 0)
                 {
@@ -87,12 +98,12 @@ public class Inventory : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning( $"No tienes suficiente {nombre}.");
+                Debug.LogWarning($"No tienes suficiente {nombre}.");
             }
         }
         else
         {
-            Debug.LogError($"El ingrediente {nombre} no está en la lista.");
+            Debug.LogError($"El ingrediente {nombre} " +"no está en la lista.");
         }
     }
 
@@ -100,14 +111,14 @@ public class Inventory : MonoBehaviour
     {
         if (cantidadNecesaria <= 0)
         {
-            Debug.LogWarning("La cantidad necesaria debe ser mayor que cero." );
+            Debug.LogWarning("La cantidad necesaria debe ser mayor que cero.");
 
             return false;
         }
 
         if (!listaIngredientes.TryGetValue(nombre,out int cantidadActual))
         {
-            Debug.LogWarning( $"No tienes {nombre}.");
+            Debug.LogWarning($"No tienes {nombre}.");
 
             return false;
         }
@@ -119,7 +130,7 @@ public class Inventory : MonoBehaviour
             return false;
         }
 
-        int cantidadRestante =cantidadActual - cantidadNecesaria;
+        int cantidadRestante =cantidadActual -cantidadNecesaria;
 
         if (cantidadRestante <= 0)
         {
@@ -142,8 +153,9 @@ public class Inventory : MonoBehaviour
             return;
         }
 
-        IntentarUsarIngrediente(ingredienteA, 1);
-        IntentarUsarIngrediente(ingredienteB, 1);
+        IntentarUsarIngrediente(ingredienteA,1);
+
+        IntentarUsarIngrediente(ingredienteB,1);
     }
 
     public int GetCurrentItemCount()
@@ -165,10 +177,10 @@ public class Inventory : MonoBehaviour
             return false;
         }
 
-        return GetCurrentItemCount() + amount <=maxSlots;
+        return GetCurrentItemCount() + amount<= maxSlots;
     }
 
-    public Dictionary<Ingredientes, int> GetIngredients()
+    public Dictionary<Ingredientes, int>GetIngredients()
     {
         return new Dictionary<Ingredientes, int>(listaIngredientes);
     }
@@ -177,7 +189,8 @@ public class Inventory : MonoBehaviour
     {
         removedIngredient = default;
 
-        Ingredientes ingredientToRemove = default;
+        Ingredientes ingredientToRemove =default;
+
         bool foundIngredient = false;
 
         foreach (KeyValuePair<Ingredientes, int> item in listaIngredientes)
@@ -189,6 +202,7 @@ public class Inventory : MonoBehaviour
 
             ingredientToRemove = item.Key;
             foundIngredient = true;
+
             break;
         }
 
@@ -207,7 +221,7 @@ public class Inventory : MonoBehaviour
         }
         else
         {
-            listaIngredientes[ingredientToRemove] =newAmount;
+            listaIngredientes[ingredientToRemove] = newAmount;
         }
 
         removedIngredient =ingredientToRemove;

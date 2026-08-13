@@ -14,6 +14,9 @@ public class CuttingStation : MonoBehaviour, IInteractable
     [Header("Configuración del corte")]
     [SerializeField] private float cuttingTime = 2f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource cuttingAudioSource;
+    [SerializeField] private AudioClip cuttingSound;
 
 
     // Ingrediente colocado actualmente sobre la tabla.
@@ -61,9 +64,7 @@ public class CuttingStation : MonoBehaviour, IInteractable
         {
             if (TryGetHeldKnife(out KnifeTool knifeTool))
             {
-                StartCoroutine(
-                    CutIngredient(knifeTool)
-                );
+                StartCoroutine(CutIngredient(knifeTool));
             }
         }
     }
@@ -172,17 +173,20 @@ public class CuttingStation : MonoBehaviour, IInteractable
 
         Debug.Log($"Comenzando a cortar {currentIngredient}.");
 
+        if (cuttingAudioSource != null && cuttingSound != null)
+        {
+            cuttingAudioSource.PlayOneShot(cuttingSound);
+        }
 
-        // reproducimos la animación del cuchillo.
         yield return StartCoroutine(knifeTool.PlayCutAnimation());
 
-        yield return new WaitForSeconds(Mathf.Max(0f, cuttingTime - 0.5f));
+        yield return new WaitForSeconds(Mathf.Max(0f,cuttingTime - 0.5f));
 
-        bool resultVisualShown = ingredientVisual.ShowIngredient(resultingIngredient);
+        bool resultVisualShown =ingredientVisual.ShowIngredient(resultingIngredient);
 
         if (!resultVisualShown)
         {
-            Debug.LogError($"No existe un visual configurado para " + $"{resultingIngredient}.");
+            Debug.LogError($"No existe un visual configurado para " +$"{resultingIngredient}.");
 
             isCutting = false;
             yield break;
@@ -191,7 +195,7 @@ public class CuttingStation : MonoBehaviour, IInteractable
         ingredientIsCut = true;
         isCutting = false;
 
-        Debug.Log($"{currentIngredient} fue convertido en " + $"{resultingIngredient}.");
+        Debug.Log($"{currentIngredient} fue convertido en " +$"{resultingIngredient}.");
     }
 
 

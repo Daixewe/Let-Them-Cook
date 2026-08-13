@@ -20,8 +20,14 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
     [Header("Interfaz")]
     [SerializeField] private FridgeUI fridgeUI;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource fridgeAudioSource;
+    [SerializeField] private AudioClip openSound;
+    [SerializeField] private AudioClip closeSound;
+
     private Quaternion leftClosedRotation;
     private Quaternion rightClosedRotation;
+
     private Quaternion leftOpenRotation;
     private Quaternion rightOpenRotation;
 
@@ -31,16 +37,16 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
     {
         if (leftDoorPivot != null)
         {
-            leftClosedRotation = leftDoorPivot.localRotation;
+            leftClosedRotation =leftDoorPivot.localRotation;
 
             leftOpenRotation =leftClosedRotation *Quaternion.Euler(0f,leftOpenAngle,0f);
         }
 
         if (rightDoorPivot != null)
         {
-            rightClosedRotation = rightDoorPivot.localRotation;
+            rightClosedRotation =rightDoorPivot.localRotation;
 
-            rightOpenRotation = rightClosedRotation *Quaternion.Euler(0f, rightOpenAngle,0f);
+            rightOpenRotation =rightClosedRotation *Quaternion.Euler(0f,rightOpenAngle,0f);
         }
     }
 
@@ -56,27 +62,31 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
             return;
         }
 
-        // Si la interfaz ya está abierta, ignorar nuevas interacciones.
+        // Si la interfaz ya está abierta,
+        // ignoramos nuevas interacciones.
         if (fridgeUI.IsOpen)
         {
             return;
         }
 
+        // El jugador debe tener la mano vacía.
         if (playerPickup.HasItem())
         {
-            Debug.Log("Debes tener la mano vacía para usar la refrigeradora.");
+            NotificationUI.Instance?.ShowMessage("Debes tener la mano vacía para usar la refrigeradora.");
 
             return;
         }
 
-        // Primera interacción: abre las puertas.
+        // Primera interacción:
+        // abre las puertas.
         if (!isOpen)
         {
             OpenFridge();
             return;
         }
 
-        // Segunda interacción: abre la interfaz.
+        // Segunda interacción:
+        // abre el almacenamiento.
         OpenStorage();
     }
 
@@ -97,9 +107,17 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
 
     private void OpenFridge()
     {
+        if (isOpen)
+        {
+            return;
+        }
+
         isOpen = true;
 
-        
+        if (fridgeAudioSource != null && openSound != null)
+        {
+            fridgeAudioSource.PlayOneShot(openSound);
+        }
     }
 
     private void OpenStorage()
@@ -116,7 +134,19 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
 
     public void CloseDoors()
     {
+        // Evita reproducir el sonido de cierre
+        // si ya estaba cerrada.
+        if (!isOpen)
+        {
+            return;
+        }
+
         isOpen = false;
+
+        if (fridgeAudioSource != null && closeSound != null)
+        {
+            fridgeAudioSource.PlayOneShot(closeSound);
+        }
     }
 
     public void CloseFridge()
@@ -135,16 +165,16 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
     {
         if (leftDoorPivot != null)
         {
-            Quaternion targetLeft = isOpen? leftOpenRotation: leftClosedRotation;
+            Quaternion targetLeft =isOpen? leftOpenRotation: leftClosedRotation;
 
-            leftDoorPivot.localRotation = Quaternion.RotateTowards(leftDoorPivot.localRotation,targetLeft,rotationSpeed * Time.deltaTime);
+            leftDoorPivot.localRotation =Quaternion.RotateTowards(leftDoorPivot.localRotation,targetLeft,rotationSpeed *Time.deltaTime);
         }
 
         if (rightDoorPivot != null)
         {
-            Quaternion targetRight = isOpen? rightOpenRotation: rightClosedRotation;
+            Quaternion targetRight =isOpen? rightOpenRotation: rightClosedRotation;
 
-            rightDoorPivot.localRotation =Quaternion.RotateTowards(rightDoorPivot.localRotation,targetRight,rotationSpeed * Time.deltaTime);
+            rightDoorPivot.localRotation =Quaternion.RotateTowards(rightDoorPivot.localRotation,targetRight,rotationSpeed *Time.deltaTime);
         }
     }
 
@@ -152,7 +182,7 @@ public class FridgeInteraction : MonoBehaviour, IInteractable
     {
         if (playerPickup == null)
         {
-            Debug.LogError( "Falta asignar PlayerPickup en FridgeInteraction.");
+            Debug.LogError("Falta asignar PlayerPickup en FridgeInteraction.");
 
             return false;
         }

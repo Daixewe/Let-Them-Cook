@@ -9,6 +9,45 @@ public class GrillStation : MonoBehaviour, IInteractable
     [Header("Espacios de cocción")]
     [SerializeField] private GrillCookingSlot[] cookingSlots;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource cookingAudioSource;
+    [SerializeField] private AudioClip cookingSound;
+
+
+    private void Update()
+    {
+        UpdateCookingSound();
+    }
+
+    private void UpdateCookingSound()
+    {
+        if (cookingAudioSource == null ||cookingSound == null)
+        {
+            return;
+        }
+
+        bool shouldPlay =IsAnythingCooking();
+
+        if (shouldPlay)
+        {
+            if (!cookingAudioSource.isPlaying)
+            {
+                cookingAudioSource.clip =cookingSound;
+
+                cookingAudioSource.loop = true;
+
+                cookingAudioSource.Play();
+            }
+        }
+        else
+        {
+            if (cookingAudioSource.isPlaying)
+            {
+                cookingAudioSource.Stop();
+            }
+        }
+    }
+
     public void Interact()
     {
         if (!ValidateReferences())
@@ -201,5 +240,23 @@ public class GrillStation : MonoBehaviour, IInteractable
         }
 
         return true;
+    }
+
+    private bool IsAnythingCooking()
+    {
+        if (cookingSlots == null)
+        {
+            return false;
+        }
+
+        foreach (GrillCookingSlot slot in cookingSlots)
+        {
+            if (slot != null &&!slot.IsEmpty &&!slot.IsReady)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

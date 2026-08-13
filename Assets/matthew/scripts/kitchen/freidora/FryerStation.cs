@@ -9,6 +9,62 @@ public class FryerStation : MonoBehaviour, IInteractable
     [Header("Espacios de cocción")]
     [SerializeField] private GrillCookingSlot[] cookingSlots;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource fryingAudioSource;
+    [SerializeField] private AudioClip fryingSound;
+
+    private void Update()
+    {
+        UpdateFryingSound();
+    }
+
+    private void UpdateFryingSound()
+    {
+        if (fryingAudioSource == null ||fryingSound == null)
+        {
+            return;
+        }
+
+        bool shouldPlay =IsAnythingFrying();
+
+        if (shouldPlay)
+        {
+            if (!fryingAudioSource.isPlaying)
+            {
+                fryingAudioSource.clip =fryingSound;
+
+                fryingAudioSource.loop = true;
+
+                fryingAudioSource.Play();
+            }
+        }
+        else
+        {
+            if (fryingAudioSource.isPlaying)
+            {
+                fryingAudioSource.Stop();
+            }
+        }
+    }
+
+    private bool IsAnythingFrying()
+    {
+        if (cookingSlots == null)
+        {
+            return false;
+        }
+
+        foreach (GrillCookingSlot slot in cookingSlots)
+        {
+            if (slot != null && !slot.IsEmpty &&!slot.IsReady)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void Interact()
     {
         if (!ValidateReferences())

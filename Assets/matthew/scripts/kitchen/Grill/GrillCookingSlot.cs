@@ -4,16 +4,16 @@ using UnityEngine;
 public class GrillCookingSlot : MonoBehaviour
 {
     [Header("Referencias")]
-    [SerializeField]
-    private StationIngredientVisual ingredientVisual;
+    [SerializeField]private StationIngredientVisual ingredientVisual;
 
     [Header("Configuración de cocción")]
-    [SerializeField]
-    private float cookingTime = 4f;
+    [SerializeField]private float cookingTime = 4f;
 
     [Header("Efecto opcional")]
-    [SerializeField]
-    private GameObject cookingEffect;
+    [SerializeField]private GameObject cookingEffect;
+
+    [Header("Indicador de listo")]
+    [SerializeField]private GameObject readyIndicator;
 
     private Ingredientes currentIngredient;
     private Ingredientes resultingIngredient;
@@ -86,6 +86,7 @@ public class GrillCookingSlot : MonoBehaviour
     private void Awake()
     {
         SetCookingEffect(false);
+        SetReadyIndicator(false);
     }
 
     public bool PlaceIngredient(Ingredientes rawIngredient,Ingredientes cookedIngredient)
@@ -118,6 +119,7 @@ public class GrillCookingSlot : MonoBehaviour
         hasIngredient = true;
         isCooking = false;
         isCooked = false;
+        SetReadyIndicator(false);
 
         elapsedCookingTime = 0f;
 
@@ -156,31 +158,28 @@ public class GrillCookingSlot : MonoBehaviour
         isCooked = true;
 
         SetCookingEffect(false);
+        SetReadyIndicator(true);
     }
 
-    public bool TryCollectIngredient(
-        out Ingredientes collectedIngredient)
+    public bool TryCollectIngredient(out Ingredientes collectedIngredient)
     {
         collectedIngredient = default;
 
         if (!hasIngredient)
         {
             Debug.LogWarning($"{gameObject.name} está vacío.");
-
             return false;
         }
 
         if (isCooking)
         {
             Debug.LogWarning($"El ingrediente de {gameObject.name} " +$"todavía se cocina.");
-
             return false;
         }
 
         if (!isCooked)
         {
             Debug.LogWarning($"El ingrediente de {gameObject.name} " +$"aún no está listo.");
-
             return false;
         }
 
@@ -207,6 +206,7 @@ public class GrillCookingSlot : MonoBehaviour
         elapsedCookingTime = 0f;
 
         SetCookingEffect(false);
+        SetReadyIndicator(false);
     }
 
     private void SetCookingEffect(bool active)
@@ -214,6 +214,13 @@ public class GrillCookingSlot : MonoBehaviour
         if (cookingEffect != null)
         {
             cookingEffect.SetActive(active);
+        }
+    }
+    private void SetReadyIndicator(bool active)
+    {
+        if (readyIndicator != null)
+        {
+            readyIndicator.SetActive(active);
         }
     }
 

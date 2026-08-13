@@ -13,11 +13,20 @@ public class NotificationUI : MonoBehaviour
     [Header("Referencias")]
     [SerializeField] private GameObject notificationPanel;
     [SerializeField] private TMP_Text notificationText;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("Configuración")]
     [SerializeField] private float defaultDuration = 2f;
 
+    [Header("Animación")]
+    [SerializeField] private float popDuration = 0.15f;
+    [SerializeField] private float fadeDuration = 0.25f;
+    [SerializeField] private float startScale = 0.8f;
+    [SerializeField] private float overshootScale = 1.1f;
+
     private Coroutine activeNotification;
+
+    private Vector3 originalScale;
 
     private void Awake()
     {
@@ -31,16 +40,23 @@ public class NotificationUI : MonoBehaviour
 
         if (notificationPanel != null)
         {
+            originalScale =notificationPanel.transform.localScale;
+
             notificationPanel.SetActive(false);
+        }
+
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
         }
     }
 
     public void ShowMessage(string message)
     {
-        ShowMessage(message, defaultDuration);
+        ShowMessage(message,defaultDuration);
     }
 
-    public void ShowMessage(string message, float duration)
+    public void ShowMessage(string message,float duration)
     {
         if (notificationPanel == null ||notificationText == null)
         {
@@ -59,17 +75,81 @@ public class NotificationUI : MonoBehaviour
             StopCoroutine(activeNotification);
         }
 
-        activeNotification = StartCoroutine(ShowMessageRoutine(message, duration));
+        activeNotification =StartCoroutine(ShowMessageRoutine(message,duration));
     }
 
     private IEnumerator ShowMessageRoutine(string message,float duration)
     {
         notificationText.text = message;
+
         notificationPanel.SetActive(true);
 
-        yield return new WaitForSecondsRealtime(Mathf.Max(0.1f, duration));
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+        }
+
+        Transform panelTransform =notificationPanel.transform;
+
+        panelTransform.localScale =originalScale * startScale;
+
+        yield return StartCoroutine(AnimateScale(panelTransform,originalScale * startScale,originalScale * overshootScale,popDuration));
+
+        yield return StartCoroutine(AnimateScale(panelTransform,originalScale * overshootScale,originalScale,popDuration));
+
+        yield return new WaitForSecondsRealtime(Mathf.Max(0.1f,duration));
+
+        if (canvasGroup != null)
+        {
+            yield return StartCoroutine(FadeOut());
+        }
+
+        panelTransform.localScale =originalScale;
 
         notificationPanel.SetActive(false);
+
         activeNotification = null;
+    }
+
+    private IEnumerator AnimateScale(Transform target,Vector3 from,Vector3 to,float duration)
+    {
+        if (duration <= 0f)
+        {
+            target.localScale = to;
+            yield break;
+        }
+
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            timer +=Time.unscaledDeltaTime;
+
+            float t =Mathf.Clamp01(timer / duration);
+
+            target.localScale =Vector3.Lerp(from,to,t);
+
+            yield return null;
+        }
+
+        target.localScale = to;
+    }
+
+    private IEnumerator FadeOut()
+    {
+        float timer = 0f;
+
+        while (timer < fadeDuration)
+        {
+            timer +=Time.unscaledDeltaTime;
+
+            float t =Mathf.Clamp01(timer / fadeDuration);
+
+            canvasGroup.alpha =Mathf.Lerp(1f,0f,t);
+
+            yield return null;
+        }
+
+        canvasGroup.alpha = 0f;
     }
 }
