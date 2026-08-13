@@ -6,6 +6,7 @@ public class Interactor : MonoBehaviour
     [Header("Interacción")]
     [SerializeField] private Transform interactorSource;
     [SerializeField] private float interactorRange = 3f;
+    [SerializeField] private float interactionRadius = 0.25f;
 
     [Header("Interfaz")]
     [SerializeField] private GameObject interactionMessage;
@@ -34,7 +35,7 @@ public class Interactor : MonoBehaviour
 
         Ray ray = new Ray(interactorSource.position,interactorSource.forward);
 
-        if (Physics.Raycast(ray,out RaycastHit hit,interactorRange))
+        if (Physics.SphereCast(ray,interactionRadius,out RaycastHit hit,interactorRange))
         {
             currentInteractable =hit.collider.GetComponentInParent<IInteractable>();
         }

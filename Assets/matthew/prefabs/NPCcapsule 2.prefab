@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6207446008245070421}
   - component: {fileID: 7126230639674452151}
   - component: {fileID: 6138315654199163618}
-  - component: {fileID: 9099105772515742290}
   - component: {fileID: 5477362624793225025}
   - component: {fileID: 763620713902534691}
   m_Layer: 0
@@ -32,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 11.081362, y: 0.99999875, z: -3.0850422}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -113,37 +112,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.57177305
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &9099105772515742290
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5050035261144158866}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 112
-  m_CollisionDetection: 0
+  m_Center: {x: 0.013042927, y: 0, z: 0.010197222}
 --- !u!114 &5477362624793225025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,8 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c179f003382154e88ecf4b710be6ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PedestrianNPC
-  moveSpeed: 2
-  enterChance: 1
+  moveSpeed: 5
+  enterChance: 0.5
 --- !u!195 &763620713902534691
 NavMeshAgent:
   m_ObjectHideFlags: 0
